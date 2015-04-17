@@ -22,7 +22,17 @@
       <h3>
 <a id="what-is-lolongo-" class="anchor" href="#what-is-lolongo-" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is Lolongo ?</h3>
 
-<p>Lolongo is a simple data struture with a simple computation model.</p>
+<p>Lolongo is a simple data structure with a simple computation model:</p>
+
+<ul>
+<li>A <i>Context</i> is a <i>Data</i> container.</li>
+<li>A <i>Data</i> is uniquely identified by a <i>Reference</i> within a <i>Context</i>.</li>
+<li>
+<i>Data</i> are not mutable and cannot be overwritten.</li>
+<li>A <i>Function</i> is evaluated within a <i>Context</i>.</li>
+<li>A <i>Function</i> gets its inputs in a <i>Context</i> and puts its results in the same <i>Context</i>.</li>
+<li>A <i>Processor</i> managed the evaluation of a set of <i>Function</i> in some <i>Context</i>s.</li>
+</ul>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/xcourangon/lolongo">Lolongo</a> is maintained by <a href="https://github.com/xcourangon">xcourangon</a>.</span>
