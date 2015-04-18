@@ -19,22 +19,41 @@
     </section>
 
     <section class="main-content">
-      <h3>
-<a id="what-is-lolongo-" class="anchor" href="#what-is-lolongo-" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is Lolongo ?</h3>
+      <h1>
+<a id="lolongo" class="anchor" href="#lolongo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lolongo</h1>
 
-<p>Lolongo is a simple data structure with a simple computation model:</p>
+<p>Lolongo is a small framework that provides a simple but efficient computational model:</p>
 
 <ul>
-<li>A <i>Context</i> is a <i>Data</i> container.</li>
-<li>A <i>Data</i> is uniquely identified by a <i>Reference</i> within a <i>Context</i>.</li>
+<li>A <em>Context</em> is a <em>Data</em> container.</li>
+<li>A <em>Data</em> is uniquely identified by a <em>Reference</em> within a Context.</li>
 <li>
-<i>Data</i> are not mutable and cannot be overwritten.</li>
+<em>Data</em> are not mutable and cannot be overwritten.</li>
 <li>
-<i>Context</i>s are structured as a hierarchical tree of <i>Context</i>.</li>
-<li>A <i>Function</i> is evaluated within a <i>Context</i>.</li>
-<li>A <i>Function</i> gets its inputs in a <i>Context</i> and puts its results in the same <i>Context</i>.</li>
-<li>A <i>Processor</i> manages the evaluation of a set of <i>Function</i> in some <i>Context</i>s.</li>
+<em>Context</em>s are structured as a hierarchical tree of <em>Context</em>.</li>
+<li>A <em>Function</em> is evaluated within a <em>Context</em>.</li>
+<li>A <em>Function</em> gets its inputs in a Context and puts its results in the same <em>Context</em>.</li>
+<li>A <em>Processor</em> manages the evaluation of a set of <em>Function</em> in some <em>Context</em>s.</li>
 </ul>
+
+<h3>
+<a id="why-lolongo-" class="anchor" href="#why-lolongo-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why <em>'Lolongo'</em> ?</h3>
+
+<p>The word <em>'lolongo'</em> stands for <em>'sequence'</em> in Swahili that is:</p>
+
+<blockquote>
+<p>a set of related events, movements, or things that follow each other in a particular order.</p>
+</blockquote>
+
+<h3>
+<a id="tech" class="anchor" href="#tech" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tech</h3>
+
+<p>Lolongo is written in Java (1.5 or higher) and needs a <a href="http://jsr331.org/">jsr331</a> implementation (why not <a href="http://choco-solver.org/">Choco</a> ?).</p>
+
+<h3>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
+
+<p><a href="http://www.gnu.org/licenses/lgpl.txt">LGPL v3</a></p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/xcourangon/lolongo">Lolongo</a> is maintained by <a href="https://github.com/xcourangon">xcourangon</a>.</span>
