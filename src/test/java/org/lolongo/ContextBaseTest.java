@@ -2,7 +2,9 @@ package org.lolongo;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ContextBaseTest {
 
@@ -13,18 +15,18 @@ public class ContextBaseTest {
         context = new ContextBase();
     }
 
-    @Test
-    public void testRefNotFound() {
+    @Test(expected=RefNotFound.class)
+    public void testRefNotFound() throws Exception {
         try {
             context.get(new RefId<String>("ref1"));
-            Assert.fail("Expecting RefNotFound");
         } catch (RefNotFound e) {
           Assert.assertEquals(new RefId<>("ref1"),e.getRef());
+          throw e;
         }
     }
 
     @Test
-    public void testPutGet() throws RefAlreadyExists, RefNotFound {
+    public void testPutGet() throws Exception {
 
         context.put(new RefId<String>("ref1"), "Value_1");
         final String result = context.get(new RefId<String>("ref1"));
@@ -40,17 +42,18 @@ public class ContextBaseTest {
         Assert.assertEquals("Value_2", context.get(new RefId<String>("ref2")));
     }
 
-    @Test
+    @Test(expected = RefAlreadyExists.class)
     public void testRefUniqueInContext() throws RefAlreadyExists, RefNotFound {
 
         context.put(new RefId<String>("ref1"), "Value_1");
         try {
             context.put(new RefId<String>("ref1"), "Value_2");
-            Assert.fail("Expecting RefAlreadyExists");
         } catch (RefAlreadyExists e) {
             Assert.assertEquals(new RefId<String>("ref1"), e.getRef());
+            throw e;
         } finally {
             Assert.assertEquals("Value_1", context.get(new RefId<String>("ref1")));
         }
     }
+
 }

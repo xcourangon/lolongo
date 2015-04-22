@@ -1,5 +1,10 @@
 package org.lolongo;
 
+/**
+ * Ref implementation for Ref by id as String.
+ * 
+ * @author Xavier Courangon
+ */
 public class RefId<T> implements Ref<T> {
     private final String id;
 
@@ -26,6 +31,6 @@ public class RefId<T> implements Ref<T> {
     }
 
     public String toString() {
-        return "RefId=" + id;
+        return "RefId(" + id+")";
     }
 }

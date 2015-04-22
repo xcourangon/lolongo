@@ -4,6 +4,14 @@ import org.lolongo.Ref;
 import org.lolongo.RefAlreadyExists;
 import org.lolongo.RefNotFound;
 
+/**
+ * Implementation of a Context always empty.
+ * No value can be put into.
+ * No Ref can be found.
+ * This class is singleton.
+ * 
+ * @author Xavier Courangon
+ */
 public final class EmptyContext implements Context {
 
     private static final Context instance = new EmptyContext();

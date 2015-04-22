@@ -1,23 +1,13 @@
 package org.lolongo;
 
-public class RefAlreadyExists extends ContextException {
-
-    static final long      serialVersionUID = 1L;
-
-    private final Ref< ? > ref;
+/**
+ * Exception thrown when a Ref already exists in a Context.
+ * 
+ * @author Xavier Courangon
+ */
+public class RefAlreadyExists extends RefException {
 
     public RefAlreadyExists(Ref< ? > ref, Context context) {
-        super(context);
-        this.ref = ref;
+        super(ref,context);
     }
-
-    public Ref< ? > getRef() {
-        return ref;
-    }
-
-    @Override
-    public String getMessage() {
-        return "Reference " + ref + " already exists in " + getContext();
-    }
-
 }

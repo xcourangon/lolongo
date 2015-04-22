@@ -12,7 +12,6 @@
  	 </properties>
   
   	<build>
- 
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -28,11 +27,48 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.7.12</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-    </dependencies>
+   <dependency>
+      <groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+	 	<version>1.7.12</version>
+      <scope>test</scope>
+   </dependency>
+   <dependency>
+      <groupId>org.jcp</groupId>
+  		<artifactId>jsr331</artifactId>
+  		<version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jsr331.jar</systemPath>
+   </dependency>
+   <dependency>
+      <groupId>org.jcp</groupId>
+  		<artifactId>jsr331.choco</artifactId>
+  		<version>2.1.5</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/jsr331.choco-2.1.5.jar</systemPath>
+   </dependency>
+    <dependency>
+      <groupId>choco</groupId>
+  		<artifactId>choco-cp</artifactId>
+  		<version>2.1.5</version>
+      <scope>test</scope>
+   </dependency>
+ </dependencies>
 
+  	<repositories>
+		<repository>
+			<id>choco.repos</id>
+			<url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
+		</repository>
+	</repositories>
 </project>

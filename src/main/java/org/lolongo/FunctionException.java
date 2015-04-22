@@ -1,11 +1,19 @@
 package org.lolongo;
 
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+
+/**
+ * Exception thrown when an Exception occurs during the execution of a Function.
+ * 
+ * @author Xavier Courangon
+ */
 public class FunctionException extends Exception {
 
     private final Function function;
 
     public FunctionException(Function function, Exception cause) {
-        super(cause);
+        super(cause.getMessage(), cause);
         this.function = function;
     }
 
@@ -19,11 +27,7 @@ public class FunctionException extends Exception {
     }
 
     public String getMessage() {
-      final StringBuffer sb = new StringBuffer("Error in function ");
-      sb.append(function);
-      if(super.getMessage()!=null) {
-       sb. append(super.getMessage());
-      }
-      return sb.toString();
+        final ResourceBundle messages = ResourceBundle.getBundle("MessagesBundle");
+        return MessageFormat.format(messages.getString(getClass().getSimpleName()), function, super.getMessage());
     }
 }

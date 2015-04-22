@@ -1,23 +1,13 @@
 package org.lolongo;
 
-public class RefNotFound extends ContextException {
-
-    static final long      serialVersionUID = 1L;
-
-    private final Ref< ? > ref;
+/**
+ * Exception thrown when a Ref was not found in a Context.
+ * 
+ * @author Xavier Courangon
+ */
+public class RefNotFound extends RefException {
 
     public RefNotFound(Ref< ? > ref, Context context) {
-        super(context);
-        this.ref = ref;
+        super(ref, context);
     }
-
-    public Ref< ? > getRef() {
-        return ref;
-    }
-
-    @Override
-    public String getMessage() {
-        return "Reference " + ref + " not found in " + getContext();
-    }
-
 }

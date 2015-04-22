@@ -1,13 +1,23 @@
 package org.lolongo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class ContextNode extends NamedContext {
+/**
+ * Context implementation for Context tree.
+ * 
+ * @author Xavier Courangon
+ */
+public class ContextNode extends NamedContext implements Comparable<ContextNode> {
 
-    private Context   parent = EmptyContext.getInstance();
+    private static Logger logger  = LoggerFactory.getLogger(ContextNode.class);
+
+    private ContextNode   parent = null;
     private Map<String,ContextNode> subcontexts=new HashMap<>();
     private boolean inherit=true;
   
@@ -20,7 +30,7 @@ public class ContextNode extends NamedContext {
       this.inherit=inherit;
     }
 
-    public Context getParent() {
+    public ContextNode getParent() {
         return parent;
     }
 
@@ -42,7 +52,7 @@ public class ContextNode extends NamedContext {
         try {
             return super.get(ref);
         } catch (RefNotFound e) {
-            if (inherit) {
+            if (inherit && parent!=null) {
                 try {
                     return parent.get(ref);
                 } catch(RefNotFound forget) {
@@ -61,5 +71,16 @@ public class ContextNode extends NamedContext {
 			subcontext.parent=this;
       	subcontexts.put(name,subcontext);
       }
+    }
+
+    @Override
+    public int compareTo(ContextNode other) {
+        if(ContextRef.isParent(this,other)) {
+          return 1;
+        }
+        if(ContextRef.isParent(other,this)) {
+          return -1;
+        }
+        return 0;
     }
 }

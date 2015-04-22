@@ -2,6 +2,7 @@ package org.lolongo;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ContextNodeTest {
@@ -14,7 +15,7 @@ public class ContextNodeTest {
         parent = new ContextNode("parent");
     }
 
-    @Test
+    @Test(expected=RefNotFound.class)
     public void testDefaultParent() throws ContextException{
       final Context context= new ContextNode("context");
       try  {
@@ -22,6 +23,7 @@ public class ContextNodeTest {
       } catch(RefNotFound e) {
  			Assert.assertEquals(new RefId<>("none"),e.getRef());
          Assert.assertEquals(context,e.getContext());
+        throw e;
       }
     }
 
@@ -39,15 +41,15 @@ public class ContextNodeTest {
       Assert.assertTrue(parent.getSubcontexts().contains(subcontext2));
     }
 
-      @Test
+    @Test(expected=ContextAlreadyExists.class)
     public void testSubcontextUniqueByName() throws ContextAlreadyExists {
       final ContextNode subcontext= new ContextNode("child");
       parent.addSubcontext(subcontext);
       try {
       	parent.addSubcontext(new ContextNode("child"));
-        	Assert.fail("Expecting ContextAlreadyExists");
       } catch(ContextAlreadyExists e) {
         Assert.assertEquals("child", e.getName());
+        throw e;
       }
     }
 
@@ -60,7 +62,7 @@ public class ContextNodeTest {
         Assert.assertEquals("val_from_parent", subcontext.get(new RefId<String>("ref")));
     }
 
-    @Test
+    @Test(expected=RefNotFound.class)
     public void testInheritanceFalse() throws Exception {
         parent.put(new RefId<String>("ref"), "val_from_parent");
         final ContextNode subcontext = new ContextNode("child", false);
@@ -68,10 +70,10 @@ public class ContextNodeTest {
 
         try {
            subcontext.get(new RefId<String>("ref"));
-           Assert.fail("Expecting RefNotFound");
         } catch (RefNotFound e) {
               Assert.assertEquals(new RefId<>("ref"),e.getRef());
               Assert.assertEquals(subcontext,e.getContext());
+          throw e;
         }
     }
 
@@ -85,4 +87,10 @@ public class ContextNodeTest {
         Assert.assertEquals("val_from_child", subcontext.get(new RefId<String>("ref")));
     }
 
+  
+    @Test @Ignore
+    public void test() throws Exception {
+      parent.addSubcontext(new ContextNode("toto"));
+      parent.addSubcontext(new ContextNode("toto"));
+    }
 }
