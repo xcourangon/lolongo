@@ -17,9 +17,10 @@ import org.slf4j.LoggerFactory;
 
 public class ProcessorBinding extends ProcessorBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessorBinding.class);
+	static final Logger logger = LoggerFactory.getLogger(ProcessorBinding.class);
 
-    public void execute(Collection<Function> functions, Context context) throws FunctionException {
+  	@Override
+   public void execute(Collection<Function> functions, Context context) throws FunctionException {
         final Collection<Function>[] steps = sort(context);
         for (Collection<Function> step : steps) {
             super.execute(step, context);
@@ -59,7 +60,6 @@ public class ProcessorBinding extends ProcessorBase {
                 if (j == i) {
                     break;
                 }
-                logger.info("i={}, j={}", i, j);
                 if (!Collections.disjoint(DataBindingUtils.getInputBindings(context, fi), DataBindingUtils.getOutputBindings(context, fj))) {
                     p.post(pos_f[i], ">", pos_f[j]);
                     logger.debug(pos_f[i] + " > " + pos_f[j]);

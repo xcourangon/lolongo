@@ -15,13 +15,13 @@ public class ContextBase implements Context {
 
     private static Logger logger  = LoggerFactory.getLogger(ContextBase.class);
 
-    private Map           content = new HashMap();
+    private Map           content = new HashMap<>();
 
     @Override
     public <T, R extends Ref<T>> T get(R ref) throws RefNotFound {
         logger.debug("get {} in {}", ref, this);
         if (content.containsKey(ref)) {
-            return (T)content.get(ref);
+            return (T) content.get(ref);
         } else {
             throw new RefNotFound(ref, this);
         }
@@ -35,9 +35,5 @@ public class ContextBase implements Context {
         } else {
             throw new RefAlreadyExists(ref, this);
         }
-    }
-
-    public String toString() {
-        return "ContextBase";
     }
 }

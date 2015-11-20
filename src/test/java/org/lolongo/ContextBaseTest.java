@@ -2,9 +2,7 @@ package org.lolongo;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class ContextBaseTest {
 
@@ -16,11 +14,24 @@ public class ContextBaseTest {
     }
 
     @Test(expected=RefNotFound.class)
+    public void testRefNotFoundEmptyContext() throws Exception {
+      
+      try {
+            context.get(new RefId<>("ref1"));
+      } catch (RefNotFound e) {
+        Assert.assertEquals(new RefId<>("ref1"),e.getRef());
+        throw e;
+      }
+    }
+
+    @Test(expected=RefNotFound.class)
     public void testRefNotFound() throws Exception {
-        try {
-            context.get(new RefId<String>("ref1"));
-        } catch (RefNotFound e) {
-          Assert.assertEquals(new RefId<>("ref1"),e.getRef());
+    
+      context.put(new RefId<String>("otherRef"), "Value_1");
+      try {
+            context.get(new RefId<>("ref1"));
+      } catch (RefNotFound e) {
+       Assert.assertEquals(new RefId<>("ref1"),e.getRef());
           throw e;
         }
     }
@@ -34,7 +45,7 @@ public class ContextBaseTest {
     }
 
     @Test
-    public void testPutGet2() throws RefAlreadyExists, RefNotFound {
+    public void testPutGetNoMismatch() throws RefAlreadyExists, RefNotFound {
 
         context.put(new RefId<String>("ref1"), "Value_1");
         context.put(new RefId<String>("ref2"), "Value_2");

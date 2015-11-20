@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProcessorChain extends ProcessorBase {
 
+
     private static final Logger logger = LoggerFactory.getLogger(ProcessorChain.class);
 
     private final Class< ? >    functionType;
@@ -49,5 +50,14 @@ public class ProcessorChain extends ProcessorBase {
         if (successor != null) {
             successor.execute(context);
         }
-    };
+    }
+
+
+    public String toString() {
+        final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+        sb.append("(");
+        sb.append(functionType);
+        sb.append(")");
+        return sb.toString();
+    }
 }

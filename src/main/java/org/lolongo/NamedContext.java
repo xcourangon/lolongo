@@ -1,5 +1,8 @@
 package org.lolongo;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * A Context having a name. Useful to retrieve a Context among other Contexts.
@@ -8,10 +11,18 @@ package org.lolongo;
  */
 public class NamedContext extends ContextBase {
 
-    private final String name;
+    public static final String   regex   = "[a-zA-Z_][a-zA-Z_0-9]*";
+    private static final Pattern pattern = Pattern.compile(regex);
 
-    public NamedContext(String name) {
-        this.name = name;
+    private final String         name;
+
+    public NamedContext(String name) throws IllegalArgumentException {
+        final Matcher matcher = pattern.matcher(name);
+        if (matcher.matches()) {
+            this.name = name;
+        } else {
+            throw new IllegalArgumentException("'" + name + "' is not a correct Context name");
+        }
     }
 
     public String getName() {
@@ -20,6 +31,6 @@ public class NamedContext extends ContextBase {
 
     @Override
     public String toString() {
-        return "Context " + name;
+        return "Context '" + name + "'";
     }
 }

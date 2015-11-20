@@ -9,10 +9,15 @@ import org.lolongo.ProcessorBase;
 import org.lolongo.RefAlreadyExists;
 import org.lolongo.function.*;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+
 public class ProcessorTest {
 
-    private Processor   processor;
-    private Context context;
+    private Processor processor;
+    private Context   context;
 
     @Before
     public void initContext() {
@@ -71,4 +76,17 @@ public class ProcessorTest {
         Assert.assertEquals("value", context.get(new RefId<String>("tmp")));
         Assert.assertEquals("value", context.get(new RefId<String>("out")));
     }
+
+/*    @Test
+    public void testSplit() throws Exception {
+      final Processor p = new ProcessorBase();
+      p.setContextRef("c1, c2, c3");
+      final Collection<Processor> split = p.split(); 
+      Assert.assertEquals(3, split.size());
+      final Iterator<Processor> it = split.iterator();
+      Assert.assertArrayEquals(new String[]{"c1"}, ((ProcessorBase)it.next()).getContextRef().toArray());
+      Assert.assertArrayEquals(new String[]{"c2"}, ((ProcessorBase)it.next()).getContextRef().toArray());
+      Assert.assertArrayEquals(new String[]{"c3"}, ((ProcessorBase)it.next()).getContextRef().toArray());
+}*/
+
 }

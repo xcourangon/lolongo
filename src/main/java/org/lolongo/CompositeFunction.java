@@ -13,6 +13,13 @@ public abstract class CompositeFunction extends FunctionContainer implements Fun
 
     @Override
     public void execute(Context context) throws FunctionException, ContextException {
-
     }
+  
+    public void accept(Processor processor) {
+      
+    }
+
+    public abstract void prepare(Context context);
+
+    public abstract void resolve(Context context);
 }

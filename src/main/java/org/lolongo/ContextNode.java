@@ -13,7 +13,7 @@ import java.util.Map;
  * 
  * @author Xavier Courangon
  */
-public class ContextNode extends NamedContext implements Comparable<ContextNode> {
+public class ContextNode extends NamedContext {
 
     private static Logger logger  = LoggerFactory.getLogger(ContextNode.class);
 
@@ -29,10 +29,14 @@ public class ContextNode extends NamedContext implements Comparable<ContextNode>
       this(id);
       this.inherit=inherit;
     }
-
+  
     public ContextNode getParent() {
         return parent;
     }
+  
+  public boolean isRoot() {
+    return parent==null;
+  }
 
     public Collection<ContextNode> getSubcontexts() {
       return subcontexts.values();
@@ -47,15 +51,19 @@ public class ContextNode extends NamedContext implements Comparable<ContextNode>
     }
   
     @Override
-    public <T,R extends Ref<T>> T get(R ref) throws RefNotFound {
+    public <T, R extends Ref<T>> T get(R ref) throws RefNotFound {
+      return get(ref,true);
+    }
 
+      
+    public <T, R extends Ref<T>> T get(R ref, boolean recursive) throws RefNotFound {
         try {
             return super.get(ref);
         } catch (RefNotFound e) {
-            if (inherit && parent!=null) {
+            if (recursive && inherit && parent!=null) {
                 try {
                     return parent.get(ref);
-                } catch(RefNotFound forget) {
+                } catch(RefNotFound _) {
                 }
             }
             throw e;
@@ -63,7 +71,6 @@ public class ContextNode extends NamedContext implements Comparable<ContextNode>
     }
 
     public void addSubcontext(ContextNode subcontext) throws ContextAlreadyExists{
-
       final String name=subcontext.getName();
       if(subcontexts.containsKey(name)) {
       	throw new ContextAlreadyExists(name);
@@ -72,15 +79,33 @@ public class ContextNode extends NamedContext implements Comparable<ContextNode>
       	subcontexts.put(name,subcontext);
       }
     }
-
-    @Override
-    public int compareTo(ContextNode other) {
-        if(ContextRef.isParent(this,other)) {
-          return 1;
+  
+    public ContextNode getRoot() {
+        if (this.isRoot()) {
+            return this;
+        } else {
+          assert parent !=null;
+          return parent.getRoot();
         }
-        if(ContextRef.isParent(other,this)) {
-          return -1;
-        }
-        return 0;
     }
+
+    public boolean isParentOf(ContextNode context) {
+        if (context == null) {
+            throw new IllegalArgumentException("context cannot be null");
+        }
+        final ContextNode parent = context.getParent();
+
+        if (parent == null) {
+            return false;
+        }
+        if (parent == this) {
+            return true;
+        }
+        return isParentOf(parent);
+    }
+  
+  public Context getContext(String contextRef) throws ContextNotFound {
+    return ContextRef.getContext(this, contextRef);
+  }
+
 }

@@ -6,17 +6,21 @@ package org.lolongo;
  * 
  * @author Xavier Courangon
  */
-public class Data<T> {
+public abstract class Data<T> {
 
-    private Ref<T> ref;
-    private T      value;
+    private final T      value;
+    private Ref<? extends Data<T>> ref;
 
-    public Data(Ref<T> ref, T value) {
+    public Data(T value) {
+        this.value = value;
+    }
+
+    public Data(Ref<? extends Data<T>> ref, T value) {
         this.ref = ref;
         this.value = value;
     }
 
-    public Ref<T> getRef() {
+    public Ref<? extends Data<T>> getRef() {
         return ref;
     }
 

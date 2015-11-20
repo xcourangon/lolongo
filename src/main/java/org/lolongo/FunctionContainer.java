@@ -18,20 +18,20 @@ public abstract class FunctionContainer {
 
     private static Logger logger  = LoggerFactory.getLogger(FunctionContainer.class);
 
-    final  Collection<Function> functions = new ArrayList<>();
+    final Collection<Function> functions = new ArrayList<>();
   
     public void add(Function function) {
        if (function == null) {
 			throw new IllegalArgumentException("function is null");
        } else {
          //TODO rework this to avoid 'instance of'
-         if(function instanceof CompositeFunction) {
-           logger.debug("add CompositeFunction {} into {}",function,this);
-           	functions.addAll(((CompositeFunction)function).functions);
-         } else {
+         //if(function instanceof CompositeFunction) {
+         //  logger.debug("add CompositeFunction {} into {}",function,this);
+         //  	functions.addAll(((CompositeFunction)function).functions);
+         //} else {
            logger.debug("add Function {} into {}",function,this);
            functions.add(function);
-         }
+         //}
        }
     }
 

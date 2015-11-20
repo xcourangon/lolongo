@@ -30,7 +30,7 @@ public final class EmptyContext implements Context {
 
     @Override
      public   <T,R extends Ref<T>> void put(R ref, T value) throws RefAlreadyExists {
-        throw new IllegalStateException("This context must remains empty");
+        throw new IllegalStateException("This context must remain empty");
     }
 
 	 @Override
