@@ -1,9 +1,7 @@
 package org.lolongo;
 
-import java.util.Collection;
-
 /**
- * A Processor executes Functions in some Contexts.
+ * A Processor executes its Functions in a Context.
  * 
  * @author Xavier Courangon
  */
@@ -11,9 +9,9 @@ public interface Processor {
 
     void add(Function f);
 
-    void execute(Context... context) throws FunctionException, ContextNotFound;
+    void execute(Context context) throws FunctionException, ContextException;
 
-    void setContextRef(String contextRef) throws IllegalArgumentException;
+//    void setContextRef(String contextRef) throws IllegalArgumentException;
   
-    Collection<String> getContextRef();
+//    Collection<String> getContextRef();
 }

@@ -29,7 +29,7 @@ public class ContextBase implements Context {
 
     @Override
     public <T, R extends Ref<T>> void put(R ref, T value) throws RefAlreadyExists {
-        logger.debug("put {} at {} in {}", value,ref, this);
+        logger.debug("put value '{}' at {} in {}", value,ref, this);
         if (content.containsKey(ref) == false) {
             content.put(ref, value);
         } else {

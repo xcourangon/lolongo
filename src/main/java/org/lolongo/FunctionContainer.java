@@ -18,7 +18,7 @@ public abstract class FunctionContainer {
 
     private static Logger logger  = LoggerFactory.getLogger(FunctionContainer.class);
 
-    final Collection<Function> functions = new ArrayList<>();
+    protected final Collection<Function> functions = new ArrayList<>();
   
     public void add(Function function) {
        if (function == null) {
@@ -29,12 +29,12 @@ public abstract class FunctionContainer {
          //  logger.debug("add CompositeFunction {} into {}",function,this);
          //  	functions.addAll(((CompositeFunction)function).functions);
          //} else {
-           logger.debug("add Function {} into {}",function,this);
+           logger.debug("adding Function {} into {}",function,this);
            functions.add(function);
          //}
        }
     }
-
+/*
   public void add(CompositeFunction functions) {
        if (functions == null) {
 			throw new IllegalArgumentException("functions is null");
@@ -42,4 +42,5 @@ public abstract class FunctionContainer {
 	       Collections.addAll(this.functions, functions);
        }
     }
+    */
 }

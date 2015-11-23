@@ -9,11 +9,6 @@ import org.lolongo.ProcessorBase;
 import org.lolongo.RefAlreadyExists;
 import org.lolongo.function.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
 public class ProcessorTest {
 
     private Processor processor;

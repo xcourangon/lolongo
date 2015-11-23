@@ -55,56 +55,57 @@ public final class ContextRef {
 
         ContextRef.check(contextRef);
 
-      // "." is polymorphe
-      if (contextRef.equals(".")) {
-        return context;
-      }
-      final ContextNode contextNode = (ContextNode)context;
-      final String path[] = split(contextRef);
-      try {
-        return getContext(contextNode,path);
-      } catch (ContextNotFound _) {
-        throw new ContextNotFound(contextRef);
-      }
+        // "." is polymorphe
+        if (contextRef.equals(".")) {
+            return context;
+        }
+        final ContextNode contextNode = (ContextNode)context;
+        final String path[] = split(contextRef);
+        try {
+            return getContext(contextNode, path);
+        } catch (ContextNotFound _) {
+            throw new ContextNotFound(contextRef);
+        }
     }
 
-  protected static String[] split(String contextRef) {
-      String[] split = contextRef.split("/");
-      if (contextRef.startsWith("/")) {
-        if(split.length==0) {
-          split = new String[] {"/"};
-        } else {
-       assert split[0].equals("");
-        split[0]="/";
+    protected static String[] split(String contextRef) {
+        String[] split = contextRef.split("/");
+        if (contextRef.startsWith("/")) {
+            if (split.length == 0) {
+                split = new String[]{"/"};
+            } else {
+                assert split[0].equals("");
+                split[0] = "/";
+            }
         }
-      }
- 	return split;
-  }
-  
-      protected static ContextNode getContext(ContextNode context, String[] path) throws ContextNotFound {
-        int length = path.length;
-        if(length==0) {
-          return context;
-        } else {
-          final ContextNode contextNode = getContextPart(context,path[0]);
-          final String[] nextPath = Arrays.copyOfRange(path, 1, length);
-          return getContext(contextNode,nextPath);
-        }
-      }
+        return split;
+    }
 
-  protected static ContextNode getContextPart(ContextNode context, String part) throws ContextNotFound {
-          switch(part) {
-            case "/":
-            	return context.getRoot();
-            case ".":
-              return context;
-            case "..":
-              return context.getParent();
+    protected static ContextNode getContext(ContextNode context, String[] path) throws ContextNotFound {
+        int length = path.length;
+        switch (length) {
+            case 0:
+                return context;
             default:
-              return context.getSubcontext(part);
-          }
-  }
-  
+                final ContextNode contextNode = getContextPart(context, path[0]);
+                final String[] nextPath = Arrays.copyOfRange(path, 1, length);
+                return getContext(contextNode, nextPath);
+        }
+    }
+
+    protected static ContextNode getContextPart(ContextNode context, String contextName) throws ContextNotFound {
+        switch (contextName) {
+            case "/":
+                return context.getRoot();
+            case ".":
+                return context;
+            case "..":
+                return context.getParent();
+            default:
+                return context.getSubcontext(contextName);
+        }
+    }
+
     public static Collection<ContextNode> getAll(ContextNode root, String name) {
         if (root == null) {
             throw new IllegalArgumentException("root is null");

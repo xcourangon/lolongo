@@ -1,16 +1,13 @@
 package org.lolongo;
 
 import org.lolongo.Context;
-import org.lolongo.ContextNotFound;
+import org.lolongo.ContextException;
 import org.lolongo.Function;
 import org.lolongo.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * Base implementation of Processor.
@@ -18,38 +15,43 @@ import java.util.Iterator;
  * 
  * @author Xavier Courangon
  */
-public class ProcessorBase extends FunctionContainer implements Processor, Cloneable {
+public class ProcessorBase extends FunctionContainer implements Processor {
 
     private static final Logger  logger = LoggerFactory.getLogger(ProcessorBase.class);
 
-    protected Collection<String> contextRefs = Arrays.asList(".");
+    //protected Collection<String> contextRefs = Arrays.asList(".");
 
+  /*
     @Override
     public void execute(Context... contexts) throws FunctionException, ContextNotFound {
         for (Context context : contexts) {
             execute(context);
         }
     }
-
-    public void execute(Context context) throws FunctionException, ContextNotFound {
+*/
+    public void execute(Context context) throws FunctionException, ContextException {
         logger.debug("Executing {} on {}...", this, context);
-        if (contextRefs == null) {
+//        if (contextRefs == null) {
             execute(functions, context);
-        } else {
+/*        } else {
             for (String contextRef : contextRefs) {
                 context = ContextRef.getContext(context, contextRef);
                 execute(functions, context);
             }
-        }
+        }*/
     }
 
-    public void execute(Collection<Function> functions, Context context) throws FunctionException {
+    public void execute(Collection<Function> functions, Context context) throws FunctionException, ContextException {
         for (Function function : functions) {
-            execute(function, context);
+          try {
+            function.execute(context);
+          } catch(Exception e) {
+            throw new FunctionException(function,e);
+          }
         }
     }
-
-    public void execute(Function function, Context context) throws FunctionException {
+/*
+    public static void execute(Function function, Context context) throws FunctionException {
         try {
           logger.debug("{} is executing {} on {}",this, function,context);
             function.execute(context);
@@ -71,11 +73,11 @@ public class ProcessorBase extends FunctionContainer implements Processor, Clone
     public Collection<String> getContextRef() {
         return Collections.unmodifiableCollection(contextRefs);
     }
-
+*/
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
-        if (contextRefs != null) {
+/*        if (contextRefs != null) {
             final Iterator<String> it = contextRefs.iterator();
             sb.append("(contextRefs=");
             for (int i = 1; i < contextRefs.size(); i++) {
@@ -87,7 +89,7 @@ public class ProcessorBase extends FunctionContainer implements Processor, Clone
             sb.append(it.next());
             assert it.hasNext() == false;
             sb.append(")");
-        }
+        }*/
         return sb.toString();
     }
 }

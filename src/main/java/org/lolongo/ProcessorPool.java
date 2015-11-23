@@ -34,7 +34,7 @@ public class ProcessorPool {
       //if (contextRefs == null) {
       //  split.add(this);
       //} else {
-        for (String contextRef : p.getContextRef()) {
+/*        for (String contextRef : p.getContextRef()) {
           try {
             final Processor clone = p.getClass().newInstance();
             clone.setContextRef(contextRef);
@@ -46,7 +46,7 @@ public class ProcessorPool {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        }
+        }*/
       //}
       return split;
     }

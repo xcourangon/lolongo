@@ -20,7 +20,7 @@ public class ProcessorBinding extends ProcessorBase {
 	static final Logger logger = LoggerFactory.getLogger(ProcessorBinding.class);
 
   	@Override
-   public void execute(Collection<Function> functions, Context context) throws FunctionException {
+   public void execute(Collection<Function> functions, Context context) throws FunctionException, ContextException {
         final Collection<Function>[] steps = sort(context);
         for (Collection<Function> step : steps) {
             super.execute(step, context);

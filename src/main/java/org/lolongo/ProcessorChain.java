@@ -45,7 +45,7 @@ public class ProcessorChain extends ProcessorBase {
     }
 
     @Override
-    public void execute(Context context) throws FunctionException, ContextNotFound {
+    public void execute(Context context) throws FunctionException, ContextException {
         super.execute(context);
         if (successor != null) {
             successor.execute(context);
