@@ -11,19 +11,32 @@ import org.lolongo.RefId;
 
 public class ToUpperCase implements Function {
 
-  @InputBinding
-  private Ref< String > refIn  = new RefId<String>("in");
-  
-  @OutputBinding
-  private Ref< String > refOut = new RefId<String>("out");
+    @InputBinding
+    private Ref<String> refIn = new RefId<String>("in");
 
-  public ToUpperCase(Ref<String> in, Ref<String> out) {
-    this.refIn = in;
-    this.refOut = out;
-  }
+    @OutputBinding
+    private Ref<String> refOut = new RefId<String>("out");
 
-  @Override
-  public void execute(Context context) throws FunctionException, ContextException {
-    context.put(refOut, context.get(refIn).toUpperCase());
-  }
+    public ToUpperCase(Ref<String> in, Ref<String> out) {
+	refIn = in;
+	refOut = out;
+    }
+
+    @Override
+    public void execute(Context context) throws FunctionException, ContextException {
+	context.put(refOut, context.get(refIn).toUpperCase());
+    }
+
+    @Override
+    public String toString() {
+	final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+	sb.append("(");
+	sb.append("in=");
+	sb.append(refIn);
+	sb.append(",");
+	sb.append("out=");
+	sb.append(refOut);
+	sb.append(")");
+	return sb.toString();
+    }
 }

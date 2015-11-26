@@ -1,33 +1,44 @@
 package org.lolongo.function;
 
-
 import org.lolongo.CompositeFunction;
-import org.lolongo.OutputBinding;
-import org.lolongo.Processor;
-import org.lolongo.Ref;
+import org.lolongo.Context;
+import org.lolongo.FunctionContainer;
 import org.lolongo.InputBinding;
 import org.lolongo.InternalRef;
+import org.lolongo.OutputBinding;
+import org.lolongo.Ref;
 
 public class ToUpperAndQuote2 extends CompositeFunction {
 
     @InputBinding
-    private Ref<String> refIn;
+    private final Ref<String> refIn;
 
     @OutputBinding
-    private Ref<String> refOut;
+    private final Ref<String> refOut;
+
+    private static final InternalRef<String> tmp = new InternalRef<String>("tmp");
 
     public ToUpperAndQuote2(Ref<String> in, Ref<String> out) {
-      this.refIn=in;
-      this.refOut=out;
+	refIn = in;
+	refOut = out;
     }
 
-  public void prepare(Processor processor, org.lolongo.Context context) {
-     processor.add(new ToUpperCase(refIn, new InternalRef<String>("tmp")));
-     processor.add(new Quote(new InternalRef<String>("tmp"), refOut));        
-
-  };
-    public String toString() {
-      return getClass().getSimpleName();
+    @Override
+    public void prepare(FunctionContainer container, Context context) {
+	container.add(new ToUpperCase(refIn, tmp));
+	container.add(new Quote(tmp, refOut));
     };
+
+    @Override
+    public String toString() {
+	final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+	sb.append("(");
+	sb.append("in=");
+	sb.append(refIn);
+	sb.append(",");
+	sb.append("out=");
+	sb.append(refOut);
+	sb.append(")");
+	return sb.toString();
+    }
 }
- 

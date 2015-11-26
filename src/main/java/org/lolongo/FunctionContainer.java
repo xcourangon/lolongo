@@ -1,46 +1,58 @@
 package org.lolongo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-
 /**
  * A container of Functions.
- * 
+ *
  * @author Xavier Courangon
  */
-public abstract class FunctionContainer {
+public class FunctionContainer implements Iterable<Function> {
 
-    private static Logger logger  = LoggerFactory.getLogger(FunctionContainer.class);
+    private static Logger logger = LoggerFactory.getLogger(FunctionContainer.class);
 
     protected final Collection<Function> functions = new ArrayList<>();
-  
-    public void add(Function function) {
-       if (function == null) {
-			throw new IllegalArgumentException("function is null");
-       } else {
-         //TODO rework this to avoid 'instance of'
-         //if(function instanceof CompositeFunction) {
-         //  logger.debug("add CompositeFunction {} into {}",function,this);
-         //  	functions.addAll(((CompositeFunction)function).functions);
-         //} else {
-           logger.debug("adding Function {} into {}",function,this);
-           functions.add(function);
-         //}
-       }
+
+    public FunctionContainer() {
     }
-/*
-  public void add(CompositeFunction functions) {
+
+    // public FunctionContainer(Collection<Function> functions) {
+    // for (final Function function : functions) {
+    // this.functions.add(function);
+    // }
+    // }
+
+    public void add(Function function) {
+	if (function == null) {
+	    throw new IllegalArgumentException("function is null");
+	} else {
+	    logger.debug("adding Function {} into {}", function, this);
+	    functions.add(function);
+	}
+    }
+    /*
+      public void add(CompositeFunction functions) {
        if (functions == null) {
-			throw new IllegalArgumentException("functions is null");
+    			throw new IllegalArgumentException("functions is null");
        } else {
-	       Collections.addAll(this.functions, functions);
+    	       Collections.addAll(this.functions, functions);
        }
     }
     */
+
+    @Override
+    public String toString() {
+	final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+	return sb.toString();
+    }
+
+    @Override
+    public Iterator<Function> iterator() {
+	return functions.iterator();
+    };
 }

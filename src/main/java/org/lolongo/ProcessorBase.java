@@ -1,56 +1,68 @@
 package org.lolongo;
 
-import org.lolongo.Context;
-import org.lolongo.ContextException;
-import org.lolongo.Function;
-import org.lolongo.Processor;
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-
 /**
- * Base implementation of Processor.
- * Functions are executed in the order they were added.
- * 
+ * Base implementation of Processor. Functions are executed in the order they
+ * were added.
+ *
  * @author Xavier Courangon
  */
 public class ProcessorBase extends FunctionContainer implements Processor {
 
-    private static final Logger  logger = LoggerFactory.getLogger(ProcessorBase.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessorBase.class);
 
-    //protected Collection<String> contextRefs = Arrays.asList(".");
+    // protected Collection<String> contextRefs = Arrays.asList(".");
 
-  /*
+    /*
     @Override
     public void execute(Context... contexts) throws FunctionException, ContextNotFound {
         for (Context context : contexts) {
             execute(context);
         }
     }
-*/
+    */
+    @Override
     public void execute(Context context) throws FunctionException, ContextException {
-        logger.debug("Executing {} on {}...", this, context);
-//        if (contextRefs == null) {
-            execute(functions, context);
-/*        } else {
-            for (String contextRef : contextRefs) {
-                context = ContextRef.getContext(context, contextRef);
-                execute(functions, context);
-            }
-        }*/
+	logger.debug("executing {} on {}...", this, context);
+	// if (contextRefs == null) {
+	execute(functions, context);
+	/*        } else {
+	    for (String contextRef : contextRefs) {
+	        context = ContextRef.getContext(context, contextRef);
+	        execute(functions, context);
+	    }
+	}*/
     }
 
-    public void execute(Collection<Function> functions, Context context) throws FunctionException, ContextException {
-        for (Function function : functions) {
-          try {
-            function.execute(context);
-          } catch(Exception e) {
-            throw new FunctionException(function,e);
-          }
-        }
+    public static void execute(Collection<Function> functions, Context context)
+	    throws FunctionException, ContextException {
+	for (final Function function : functions) {
+	    try {
+		logger.debug("executing {} on {}...", function, context);
+		function.execute(context);
+	    } catch (final Exception e) {
+		throw new FunctionException(function, e);
+	    }
+	}
     }
-/*
+
+    public static void execute(FunctionContainer functions, Context context)
+	    throws FunctionException, ContextException {
+	for (final Function function : functions) {
+	    try {
+		logger.debug("executing {} on {}...", function, context);
+		function.execute(context);
+	    } catch (final Exception e) {
+		throw new FunctionException(function, e);
+	    }
+	}
+    }
+
+    /*
     public static void execute(Function function, Context context) throws FunctionException {
         try {
           logger.debug("{} is executing {} on {}",this, function,context);
@@ -73,23 +85,23 @@ public class ProcessorBase extends FunctionContainer implements Processor {
     public Collection<String> getContextRef() {
         return Collections.unmodifiableCollection(contextRefs);
     }
-*/
+    */
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
-/*        if (contextRefs != null) {
-            final Iterator<String> it = contextRefs.iterator();
-            sb.append("(contextRefs=");
-            for (int i = 1; i < contextRefs.size(); i++) {
-                assert it.hasNext();
-                sb.append(it.next());
-                sb.append(", ");
-            }
-            assert it.hasNext();
-            sb.append(it.next());
-            assert it.hasNext() == false;
-            sb.append(")");
-        }*/
-        return sb.toString();
+	final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+	/*        if (contextRefs != null) {
+	    final Iterator<String> it = contextRefs.iterator();
+	    sb.append("(contextRefs=");
+	    for (int i = 1; i < contextRefs.size(); i++) {
+	        assert it.hasNext();
+	        sb.append(it.next());
+	        sb.append(", ");
+	    }
+	    assert it.hasNext();
+	    sb.append(it.next());
+	    assert it.hasNext() == false;
+	    sb.append(")");
+	}*/
+	return sb.toString();
     }
 }
