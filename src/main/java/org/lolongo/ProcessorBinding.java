@@ -1,5 +1,6 @@
 package org.lolongo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,17 +21,18 @@ public class ProcessorBinding extends ProcessorBase {
 
     @Override
     public void execute(Context context) throws FunctionException, ContextException {
-	final Collection<Function>[] steps = sort(context);
+	final Collection<Function>[] steps = sort(functions, context);
 	for (final Collection<Function> step : steps) {
 	    super.execute(step, context);
 	}
     }
 
-    protected Collection<Function>[] sort(Context context) throws DataBindingException {
+    static protected Collection<Function>[] sort(Collection<Function> functions, Context context)
+	    throws DataBindingException {
 
 	final int size = functions.size();
 	if (size == 0) {
-	    return new HashSet[0];
+	    return new ArrayList[0];
 	}
 
 	// Optimization : no constraint computation if only one function

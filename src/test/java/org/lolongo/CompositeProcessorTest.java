@@ -84,6 +84,9 @@ public class CompositeProcessorTest {
 	processor.add(new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out")));
 	processor.add(new Identity(new RefId<String>("out"), new RefId<String>("out2")));
 	processor.execute(context);
+	Assert.assertEquals("value", context.get(new RefId<String>("in")));
+	Assert.assertEquals("value", context.get(new RefId<String>("tmp")));
+	Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
 	Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out2")));
     }
 
