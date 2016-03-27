@@ -22,47 +22,48 @@ public class CompositeProcessor extends ProcessorBase {
     // }
     // }
 
-    public void prepare(CompositeFunctionContainer container, Context context)
-	    throws FunctionException, ContextException {
-	logger.debug("preparing functions from {}", this);
-	for (final Function function : functions) {
-	    // TODO rework to avoid 'instanceof' and the inner 'for'
-	    if (function instanceof CompositeFunction) {
-		final InternalContext internalContext = new InternalContext(context);
-		container.add((CompositeFunction) function, internalContext);
+    public void prepare(CompositeFunctionContainer container, Context context) throws FunctionException, ContextException {
+        logger.debug("preparing functions from {}", this);
+        for (final Function function : functions) {
+            // TODO rework to avoid 'instanceof' and the inner 'for'
+            if (function instanceof CompositeFunction) {
+                final CompositeFunction compositeFunction = ((CompositeFunction)function);
+                final InternalContext internalContext = new InternalContext(context);
+                container.add((CompositeFunction)function, internalContext);
 
-		logger.debug("- preparing Composite function {}", function);
-		final FunctionContainer functionContainer = new FunctionContainer();
-		((CompositeFunction) function).prepare(functionContainer, internalContext);
-		container.add(functionContainer, internalContext);
-		container.add(function, internalContext);
-	    } else {
-		container.add(function);
-	    }
-	}
+                logger.debug("- preparing Composite function {}", function);
+                final FunctionContainer functionContainer = new FunctionContainer();
+                compositeFunction.prepare(functionContainer, internalContext);
+                container.add(functionContainer, internalContext);
+                container.add(function, internalContext);
+            } else {
+                container.add(function);
+            }
+        }
     }
 
-    public void resolve(final CompositeFunctionContainer all) throws FunctionException, ContextException {
-	for (final Entry<Function, Context> entry : all) {
-	    // TODO rework to avoid 'instanceof'
-	    final Function function = entry.getKey();
-	    final Context internalContext = entry.getValue();
-	    if (function instanceof CompositeFunction) {
-		logger.debug("- resolving Composite function {}", function);
-		((CompositeFunction) function).resolve(internalContext);
-	    } else {
-		logger.debug("- executing function {}", function);
-		function.execute(internalContext);
-	    }
-	}
+    public void resolve(final CompositeFunctionContainer all, Context context) throws FunctionException, ContextException {
+        for (final Entry<Function, Context> entry : all) {
+            // TODO rework to avoid 'instanceof'
+            final Function function = entry.getKey();
+            final Context internalContext = entry.getValue();
+            if (function instanceof CompositeFunction) {
+                final CompositeFunction compositeFunction = ((CompositeFunction)function);
+                logger.debug("- resolving Composite function {}", compositeFunction);
+                compositeFunction.resolve(internalContext);
+            } else {
+                logger.debug("- executing function {}", function);
+                function.execute(internalContext);
+            }
+        }
     }
 
     @Override
     public void execute(Context context) throws FunctionException, ContextException {
-	logger.debug("Executing {} on {}...", this, context);
-	final CompositeFunctionContainer chain = new CompositeFunctionContainer(context);
-	prepare(chain, context);
-	resolve(chain);
+        logger.debug("Executing {} on {}...", this, context);
+        final CompositeFunctionContainer chain = new CompositeFunctionContainer(context);
+        prepare(chain, context);
+        resolve(chain, context);
     }
 
 }

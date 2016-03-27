@@ -1,1 +1,1 @@
-{"mixinTypes":[],"builders":{"configs":{},"default":"maven"},"runners":{"configs":{"system:/java/codenvy-cli":{"ram":0,"variables":{},"options":{}}},"default":"system:/java/codenvy-cli"},"type":"maven","attributes":{"languageVersion":["1.6"],"language":["java"]}}
+{"mixinTypes":["contribution"],"builders":{"configs":{},"default":"maven"},"runners":{"configs":{"system:/java/codenvy-cli":{"ram":0,"variables":{},"options":{}}},"default":"system:/java/codenvy-cli"},"type":"maven","attributes":{"languageVersion":["1.6"],"language":["java"]}}
