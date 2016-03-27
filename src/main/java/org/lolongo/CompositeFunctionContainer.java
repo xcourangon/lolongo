@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-class CompositeFunctionContainer implements Iterable<Entry<Function, Context>> {
+public class CompositeFunctionContainer implements Iterable<Entry<Function, Context>> {
     private final List<Entry<Function, Context>> container = new ArrayList<>();
     private final Context context;
 
@@ -36,5 +36,4 @@ class CompositeFunctionContainer implements Iterable<Entry<Function, Context>> {
 	    add(function, context);
 	}
     }
-
 }
