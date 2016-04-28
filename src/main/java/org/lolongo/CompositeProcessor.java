@@ -23,7 +23,7 @@ public class CompositeProcessor extends ProcessorBase {
     // }
 
     public void prepare(CompositeFunctionContainer container, Context context) throws FunctionException, ContextException {
-        logger.debug("preparing functions from {}", this);
+        logger.debug("preparing functions for {} in {}", this, context);
         for (final Function function : functions) {
             // TODO rework to avoid 'instanceof' and the inner 'for'
             if (function instanceof CompositeFunction) {
@@ -49,10 +49,10 @@ public class CompositeProcessor extends ProcessorBase {
             final Context internalContext = entry.getValue();
             if (function instanceof CompositeFunction) {
                 final CompositeFunction compositeFunction = ((CompositeFunction)function);
-                logger.debug("- resolving Composite function {}", compositeFunction);
+                logger.debug("- resolving Composite function {} in {}", compositeFunction, internalContext);
                 compositeFunction.resolve(internalContext);
             } else {
-                logger.debug("- executing function {}", function);
+                logger.debug("- executing function {} in {}", function, internalContext);
                 function.execute(internalContext);
             }
         }

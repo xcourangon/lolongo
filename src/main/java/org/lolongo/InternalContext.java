@@ -8,14 +8,20 @@ public class InternalContext extends ContextBase {
     private static Logger logger = LoggerFactory.getLogger(InternalContext.class);
 
     private final Context context;
+  private boolean filter = true;
 
     public InternalContext(Context context) {
 	this.context = context;
     }
 
+      public InternalContext(Context context, boolean filter) {
+	this.context = context;
+        this.filter=filter;
+    }
+
     @Override
     public <T, R extends Ref<T>> void put(R ref, T value) throws RefAlreadyExists {
-	if (ref instanceof InternalRef<?>) {
+	if (ref instanceof InternalRef<?> || filter==false) {
 	    super.put(ref, value);
 	} else {
 	    context.put(ref, value);
@@ -28,13 +34,16 @@ public class InternalContext extends ContextBase {
 	    return super.get(ref);
 	} catch (final RefNotFound e) {
 	    logger.debug("{} not found in {}. Trying in the execution context {}", ref, this, context);
+     try {
 	    return context.get(ref);
+     } catch (final RefNotFound forget) {
+       throw e;
+     }
 	}
     };
 
     @Override
     public String toString() {
-	final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
-	return sb.toString();
+		return getClass().getSimpleName();
     };
 }
