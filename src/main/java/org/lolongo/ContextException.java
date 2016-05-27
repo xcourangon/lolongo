@@ -9,7 +9,9 @@ import java.util.ResourceBundle;
  */
 public abstract class ContextException extends Exception {
 
-    private Context context;
+    static final ResourceBundle messages = ResourceBundle.getBundle("MessagesBundle");
+
+    protected Context context;
 
     public ContextException(Context context) {
         this.context = context;
@@ -20,7 +22,6 @@ public abstract class ContextException extends Exception {
     }
 
     public String getMessage() {
-        final ResourceBundle messages = ResourceBundle.getBundle("MessagesBundle");
         return MessageFormat.format(messages.getString(getClass().getSimpleName()), context);
     }
 }

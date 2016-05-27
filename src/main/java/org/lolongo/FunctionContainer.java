@@ -16,7 +16,7 @@ public class FunctionContainer implements Iterable<Function> {
 
     private static Logger logger = LoggerFactory.getLogger(FunctionContainer.class);
 
-    protected final Collection<Function> functions = new ArrayList<>();
+    final Collection<Function> functions = new ArrayList<>();
 
     public FunctionContainer() {
     }
