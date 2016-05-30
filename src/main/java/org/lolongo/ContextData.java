@@ -5,10 +5,9 @@ package org.lolongo;
  *
  * @author Xavier Courangon
  */
-public interface ContextData extends Context {
+public class ContextData extends ContextBase {
 
-    default void put(Data<?> data) throws RefAlreadyExists {
+    public void put(Data<?> data) throws RefAlreadyExists {
 	put((Ref) data.getRef(), data);
     }
-
 }
