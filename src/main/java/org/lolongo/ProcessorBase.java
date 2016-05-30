@@ -6,8 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base implementation of Processor. Functions are executed in the order they
- * were added.
+ * Base implementation of Processor. Functions are executed in the order they were added.
  *
  * @author Xavier Courangon
  */
@@ -38,25 +37,26 @@ public class ProcessorBase extends FunctionContainer implements Processor {
 	}*/
     }
 
-    public static void execute(Collection<Function> functions, Context context)
-	    throws FunctionException, ContextException {
+    /**
+     * Base implementation only execute functions
+     */
+    public static void execute(Collection<Function> functions, Context context) throws FunctionException {
 	for (final Function function : functions) {
 	    try {
 		logger.debug("executing {} on {}...", function, context);
 		function.execute(context);
-	    } catch (final Exception e) {
+	    } catch (final ContextException e) {
 		throw new FunctionException(function, e);
 	    }
 	}
     }
 
-    public static void execute(FunctionContainer functions, Context context)
-	    throws FunctionException, ContextException {
+    public static void execute(FunctionContainer functions, Context context) throws FunctionException {
 	for (final Function function : functions) {
 	    try {
 		logger.debug("executing {} on {}...", function, context);
 		function.execute(context);
-	    } catch (final Exception e) {
+	    } catch (final ContextException e) {
 		throw new FunctionException(function, e);
 	    }
 	}
