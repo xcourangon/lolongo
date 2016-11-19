@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.constraints.Problem;
 import javax.constraints.ProblemFactory;
 import javax.constraints.Solution;
@@ -19,7 +20,7 @@ public class ProcessorBinding extends ProcessorBase {
     static final Logger logger = LoggerFactory.getLogger(ProcessorBinding.class);
 
     @Override
-    public void execute(Context context) throws FunctionException, ContextException {
+    public void execute(Context context) throws FunctionException {
         final Collection<Function>[] steps = sort(functions, context);
         for (final Collection<Function> step : steps) {
             super.execute(step, context);
