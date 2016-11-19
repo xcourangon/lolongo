@@ -12,27 +12,27 @@ public class ContextRoot extends ContextNode {
 
     private static Logger logger = LoggerFactory.getLogger(ContextRoot.class);
 
+    @Override
+    protected void checkName(String name) {
+        assert name == null;
+    }
+
     public ContextRoot() {
-	super(null);
+        super(null);
     }
 
     @Override
     public ContextNode getParent() {
-	return null;
+        return null;
     }
 
     @Override
     public boolean isRoot() {
-	return true;
+        return true;
     }
 
     @Override
     public ContextRoot getRoot() {
-	return this;
-    }
-
-    @Override
-    public String getName() {
-	return "";
+        return this;
     }
 }
