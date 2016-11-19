@@ -93,7 +93,7 @@ public class ContextRefTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetAllSubcontextNullName() throws Exception {
-        ContextRef.getAllSubcontext(new ContextRoot(), null);
+        ContextRef.getAllSubcontext(new ContextRoot(), (String) null);
     }
 
     @Test(expected = IllegalArgumentException.class)

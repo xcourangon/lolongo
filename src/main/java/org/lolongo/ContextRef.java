@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -135,11 +136,25 @@ public final class ContextRef {
         }
     }
 
-    // TODO SHOULD be based on getContext(Predicate)
-    public static Collection<ContextNode> getAllSubcontext(ContextNode root, String name) {
+    public static Collection<ContextNode> getAllSubcontext(ContextNode root, Predicate<ContextNode> predicate) {
         if (root == null) {
             throw new IllegalArgumentException("root is null");
         }
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
+
+        final Collection<ContextNode> result = new ArrayList<>();
+        for (final ContextNode subContext : root.getSubcontexts()) {
+            if (predicate.test(subContext)) {
+                result.add(subContext);
+            }
+            result.addAll(getAllSubcontext(subContext, predicate));
+        }
+        return result;
+    }
+
+    public static Collection<ContextNode> getAllSubcontext(ContextNode root, final String name) {
         if (name == null) {
             throw new IllegalArgumentException("name is null");
         }
@@ -147,16 +162,12 @@ public final class ContextRef {
             throw new IllegalArgumentException("context name'" + name + "' is not wellformed");
         }
 
-        final Collection<ContextNode> all = new ArrayList<>();
-        final Collection<ContextNode> subContexts = root.getSubcontexts();
-
-        for (final ContextNode context : subContexts) {
-            if (name.equals(context.getName())) {
-                all.add(context);
+        return getAllSubcontext(root, new Predicate<ContextNode>() {
+            @Override
+            public boolean test(ContextNode t) {
+                return t.getName().equals(name);
             }
-            all.addAll(getAllSubcontext(context, name));
-        }
-        return all;
+        });
     }
 
     /**
