@@ -35,6 +35,6 @@ public class ContextRootTest {
 
 	@Test
 	public void testGetAbsoluteContext() {
-		Assert.assertEquals("/", ContextRef.getAbsoluteContext(contextRoot));
+		Assert.assertEquals("/", ContextRef.getAbsoluteContextRef(contextRoot));
 	}
 }

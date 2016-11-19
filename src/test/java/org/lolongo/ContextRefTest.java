@@ -1,10 +1,9 @@
 package org.lolongo;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.lolongo.ContextNode;
-
-import java.util.Arrays;
 
 public class ContextRefTest {
 
@@ -15,7 +14,7 @@ public class ContextRefTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullContextRef() throws Exception {
-        ContextRef.getContext(new ContextNode("root"), (String)null);
+        ContextRef.getContext(new ContextNode("root"), (String) null);
     }
 
     @Test
@@ -87,6 +86,21 @@ public class ContextRefTest {
         Assert.assertEquals(root, ContextRef.getContext(subsubcontext2, "../.."));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAllSubcontextNullRoot() throws Exception {
+        ContextRef.getAllSubcontext(null, "name");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAllSubcontextNullName() throws Exception {
+        ContextRef.getAllSubcontext(new ContextRoot(), null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAllSubcontextWrongName() throws Exception {
+        final ContextNode root = new ContextRoot();
+        ContextRef.getAllSubcontext(root, "nam.e");
+    }
 
     @Test
     public void testGetAll() throws Exception {
@@ -104,22 +118,53 @@ public class ContextRefTest {
         final ContextNode subsubcontext22 = new ContextNode("subsubcontext2");
         subcontext2.addSubcontext(subsubcontext22);
 
-        Assert.assertEquals(1, ContextRef.getAll(root, "subcontext1").size());
-        Assert.assertTrue(ContextRef.getAll(root, "subcontext1").containsAll(Arrays.asList(subcontext1)));
-        Assert.assertEquals(1, ContextRef.getAll(root, "subcontext2").size());
-        Assert.assertTrue(ContextRef.getAll(root, "subcontext2").containsAll(Arrays.asList(subcontext2)));
-        Assert.assertEquals(2, ContextRef.getAll(root, "subsubcontext1").size());
-        Assert.assertTrue(ContextRef.getAll(root, "subsubcontext1").containsAll(Arrays.asList(subsubcontext11, subsubcontext21)));
-        Assert.assertEquals(2, ContextRef.getAll(root, "subsubcontext2").size());
-        Assert.assertTrue(ContextRef.getAll(root, "subsubcontext2").containsAll(Arrays.asList(subsubcontext12, subsubcontext22)));
+        Assert.assertEquals(1, ContextRef.getAllSubcontext(root, "subcontext1").size());
+        Assert.assertTrue(ContextRef.getAllSubcontext(root, "subcontext1").containsAll(Arrays.asList(subcontext1)));
+        Assert.assertEquals(1, ContextRef.getAllSubcontext(root, "subcontext2").size());
+        Assert.assertTrue(ContextRef.getAllSubcontext(root, "subcontext2").containsAll(Arrays.asList(subcontext2)));
+        Assert.assertEquals(2, ContextRef.getAllSubcontext(root, "subsubcontext1").size());
+        Assert.assertTrue(ContextRef.getAllSubcontext(root, "subsubcontext1").containsAll(Arrays.asList(subsubcontext11, subsubcontext21)));
+        Assert.assertEquals(2, ContextRef.getAllSubcontext(root, "subsubcontext2").size());
+        Assert.assertTrue(ContextRef.getAllSubcontext(root, "subsubcontext2").containsAll(Arrays.asList(subsubcontext12, subsubcontext22)));
     }
 
- 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetContextRefList() throws Exception {
+        ContextRef.getContextRefList(null);
+    }
+
     @Test
     public void testGetContextRefs() throws Exception {
         Assert.assertEquals(Arrays.asList("root"), ContextRef.getContextRefList("root"));
         Assert.assertEquals(Arrays.asList("/context"), ContextRef.getContextRefList("/context"));
         Assert.assertEquals(Arrays.asList("/context/subcontext"), ContextRef.getContextRefList("/context/subcontext"));
-        Assert.assertEquals(Arrays.asList("root","/context","/context/subcontext"), ContextRef.getContextRefList("root ,/context, /context/subcontext"));
+        Assert.assertEquals(Arrays.asList("root", "/context", "/context/subcontext"), ContextRef.getContextRefList("root ,/context, /context/subcontext"));
+    }
+
+    @Test
+    public void testAbsoluteRefNodeContext() throws Exception {
+        Assert.assertEquals("name", ContextRef.getAbsoluteContextRef(new ContextNode("name")));
+    }
+
+    @Test
+    public void testAbsoluteRefRoot() throws Exception {
+        Assert.assertEquals("/", ContextRef.getAbsoluteContextRef(new ContextRoot()));
+    }
+
+    @Test
+    public void testAbsoluteRefSubcontext() throws Exception {
+        final ContextNode subcontext = new ContextNode("name");
+        new ContextRoot().addSubcontext(subcontext);
+        Assert.assertEquals("/name/", ContextRef.getAbsoluteContextRef(subcontext));
+    }
+
+    @Test
+    public void testAbsoluteRefTreeContext() throws Exception {
+        ContextRoot root = new ContextRoot();
+        final ContextNode subcontext = new ContextNode("name");
+        root.addSubcontext(subcontext);
+        final ContextNode subcontext2 = new ContextNode("name2");
+        subcontext.addSubcontext(subcontext2);
+        Assert.assertEquals("/name/name2/", ContextRef.getAbsoluteContextRef(subcontext2));
     }
 }

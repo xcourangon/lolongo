@@ -1,15 +1,13 @@
 package org.lolongo;
 
-import org.lolongo.Context;
-import org.lolongo.ContextNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class to get Context by ref in a tree of Context.
@@ -18,8 +16,12 @@ import java.util.regex.Pattern;
  */
 public final class ContextRef {
 
-    private static Logger        logger        = LoggerFactory.getLogger(ContextRef.class);
+    private static Logger logger = LoggerFactory.getLogger(ContextRef.class);
 
+    public static final String path_separator = "/";
+    public static final String root_context = path_separator;
+    public static final String current_context = ".";
+    public static final String parent_context = "..";
     /*
      * <path> ::= <absolute_path> | <relative_path>
      * <absolute_path> ::= '/' <relative_path>?
@@ -27,16 +29,21 @@ public final class ContextRef {
      * <path_element>  ::= '.' | '..' | <context_name>
      * <context_name>  ::= (\w)+
      */
-    private static final String  context_name  = NamedContext.regex;
-    private static final String  path_element  = "((\\.)|(\\.\\.)|(" + context_name + "))";
-    private static final String  relative_path = path_element + "(/" + path_element + ")*";
-    private static final String  absolute_path = "/(" + relative_path + ")?";
-    private static final String  path          = "((" + absolute_path + ")|(" + relative_path + "))";
-    private static final Pattern pattern       = Pattern.compile(path);
+    private static final String context_name = NamedContext.regex;
+    private static final String path_element = "((\\Q" + current_context + "\\E)|(\\Q" + parent_context + "\\E)|(" + context_name + "))";
+    private static final String relative_path = path_element + "(" + path_separator + path_element + ")*";
+    private static final String absolute_path = path_separator + "(" + relative_path + ")?";
+    private static final String path = "((" + absolute_path + ")|(" + relative_path + "))";
+    private static final Pattern pattern = Pattern.compile(path);
 
     private ContextRef() {
     }
 
+    /**
+     * Check if a context ref (absolute or relative) is well-formed.
+     * @param contextRef the context ref to check
+     * @throws IllegalArgumentException if the context ref is not well-formed
+     */
     public static void check(String contextRef) throws IllegalArgumentException {
         if (contextRef == null) {
             throw new IllegalArgumentException("contextRef is null");
@@ -47,6 +54,28 @@ public final class ContextRef {
         }
     }
 
+    /**
+     * Returns the absolute context reference from a node Context.
+     * @param contextNode the context we want its absolute ref
+     * @return the absolute context reference 
+     */
+    public static String getAbsoluteContextRef(ContextNode contextNode) {
+        final StringBuilder sb = new StringBuilder();
+        String name = contextNode.getName();
+        if (contextNode.isRoot()) {
+            if (name != null) {
+                sb.append(name);
+            } else {
+                sb.append(root_context);
+            }
+        } else {
+            sb.append(getAbsoluteContextRef(contextNode.getParent()));
+            sb.append(name);
+            sb.append(path_separator);
+        }
+        return sb.toString();
+    }
+
     public static Context getContext(Context context, String contextRef) throws ContextNotFound {
 
         if (context == null) {
@@ -55,11 +84,11 @@ public final class ContextRef {
 
         ContextRef.check(contextRef);
 
-        // "." is polymorphe
-        if (contextRef.equals(".")) {
+        // current_context "." is polymorphe
+        if (contextRef.equals(current_context)) {
             return context;
         }
-        final ContextNode contextNode = (ContextNode)context;
+        final ContextNode contextNode = (ContextNode) context;
         final String path[] = split(contextRef);
         try {
             return getContext(contextNode, path);
@@ -69,13 +98,13 @@ public final class ContextRef {
     }
 
     protected static String[] split(String contextRef) {
-        String[] split = contextRef.split("/");
-        if (contextRef.startsWith("/")) {
+        String[] split = contextRef.split(path_separator);
+        if (contextRef.startsWith(path_separator)) {
             if (split.length == 0) {
-                split = new String[]{"/"};
+                split = new String[] { path_separator };
             } else {
                 assert split[0].equals("");
-                split[0] = "/";
+                split[0] = path_separator;
             }
         }
         return split;
@@ -84,73 +113,75 @@ public final class ContextRef {
     protected static ContextNode getContext(ContextNode context, String[] path) throws ContextNotFound {
         int length = path.length;
         switch (length) {
-            case 0:
-                return context;
-            default:
-                final ContextNode contextNode = getContextPart(context, path[0]);
-                final String[] nextPath = Arrays.copyOfRange(path, 1, length);
-                return getContext(contextNode, nextPath);
+        case 0:
+            return context;
+        default:
+            final ContextNode contextNode = getContextPart(context, path[0]);
+            final String[] nextPath = Arrays.copyOfRange(path, 1, length);
+            return getContext(contextNode, nextPath);
         }
     }
 
     protected static ContextNode getContextPart(ContextNode context, String contextName) throws ContextNotFound {
         switch (contextName) {
-            case "/":
-                return context.getRoot();
-            case ".":
-                return context;
-            case "..":
-                return context.getParent();
-            default:
-                return context.getSubcontext(contextName);
+        case path_separator:
+            return context.getRoot();
+        case current_context:
+            return context;
+        case parent_context:
+            return context.getParent();
+        default:
+            return context.getSubcontext(contextName);
         }
     }
 
-    public static Collection<ContextNode> getAll(ContextNode root, String name) {
+    // TODO SHOULD be based on getContext(Predicate)
+    public static Collection<ContextNode> getAllSubcontext(ContextNode root, String name) {
         if (root == null) {
             throw new IllegalArgumentException("root is null");
         }
         if (name == null) {
             throw new IllegalArgumentException("name is null");
         }
-      if(name.contains("/")||name.contains(".")) {
-        throw new IllegalArgumentException("context name'" + name + "' is not wellformed");
-      }
- 
-     final Collection<ContextNode> all = new ArrayList<>();
-     final Collection<ContextNode> subContexts =   root.getSubcontexts();
-      
-     for (final ContextNode context : subContexts) {
-  		 if(name.equals(context.getName())) {
-         all.add(context);
-       }
-       all.addAll(getAll(context,name));
-	  }
-     return all;
-   }
+        if (name.contains(path_separator) || name.contains(current_context)) {
+            throw new IllegalArgumentException("context name'" + name + "' is not wellformed");
+        }
+
+        final Collection<ContextNode> all = new ArrayList<>();
+        final Collection<ContextNode> subContexts = root.getSubcontexts();
+
+        for (final ContextNode context : subContexts) {
+            if (name.equals(context.getName())) {
+                all.add(context);
+            }
+            all.addAll(getAllSubcontext(context, name));
+        }
+        return all;
+    }
 
     /**
      * <context_refs> ::= <path> (',' <path> )*
      **/
     private static final Pattern contextRefsPattern = Pattern.compile(path + "(\\s*,\\s*" + path + ")*");
 
-    public static Collection<String> getContextRefList(String contextRefs) {
-    	if (contextRefs == null) {
-			return null;
-      }
+    public static List<String> getContextRefList(String contextRefs) {
+        if (contextRefs == null) {
+            throw new IllegalArgumentException("contextRefs is null");
+        }
 
-      if(contextRefsPattern.matcher(contextRefs).matches()==false) {
-         throw new IllegalArgumentException("contextRefs '" + contextRefs + "' is not wellformed");
-      }
-       
-     final String[] split = contextRefs.split(",");
-      
-     final Collection<String> result = new ArrayList<>(split.length);
-     for (String contextRef : split) {
-        contextRef=contextRef.trim();
-        ContextRef.check(contextRef);
-        result.add(contextRef);
-		}
-		return result;
-	}
+        if (contextRefsPattern.matcher(contextRefs).matches() == false) {
+            throw new IllegalArgumentException("contextRefs '" + contextRefs + "' is not wellformed");
+        }
+
+        final String[] split = contextRefs.split(",");
+
+        final List<String> result = new ArrayList<>(split.length);
+        for (String contextRef : split) {
+            contextRef = contextRef.trim();
+            ContextRef.check(contextRef);
+            result.add(contextRef);
+        }
+        return result;
+    }
+
 }
