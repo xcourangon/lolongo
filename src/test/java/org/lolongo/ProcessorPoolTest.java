@@ -4,8 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import org.lolongo.function.*;
+import org.lolongo.function.Addition;
 
 public class ProcessorPoolTest {
 
@@ -16,7 +15,8 @@ public class ProcessorPoolTest {
         pool = new ProcessorPool();
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testSort() throws Exception {
         final ContextNode root = new ContextNode("root");
         final ContextNode subcontext1 = new ContextNode("subcontext1");
@@ -32,13 +32,12 @@ public class ProcessorPoolTest {
         final ContextNode subsubcontext22 = new ContextNode("subsubcontext2");
         subcontext2.addSubcontext(subsubcontext22);
 
+        // final Processor p1 = new ProcessorBase();
+        // p1.setContextRef("root");
 
- //     final Processor p1 = new ProcessorBase();
-  //    p1.setContextRef("root");
-      
     }
-  
-     private ContextNode root;
+
+    private ContextNode root;
 
     @Before
     public void initContext() {
@@ -61,8 +60,9 @@ public class ProcessorPoolTest {
      *       +----+                    
      * 
      */
-  // TODO sort processor
-    @Test @Ignore("TODO sort processor")
+    // TODO sort processor
+    @Test
+    @Ignore("TODO sort processor")
     public void test1() throws Exception {
         root.put(new RefId<Double>("e1"), 2.4);
         root.put(new RefId<Double>("e2"), 3.3);
@@ -70,20 +70,20 @@ public class ProcessorPoolTest {
         root.addSubcontext(child);
         child.put(new RefId<Double>("e3"), -4.2);
 
-        final Processor processor1 = new ProcessorBinding();
+        final Processor processor1 = new ProcessorBase(FunctionSequencerBinding.getInstance());
         processor1.add(new Addition(new RefId<Double>("e1"), new RefId<Double>("e2"), new RefId<Double>("s1")));
 
-        final Processor processor2 = new ProcessorBinding();
-//        processor2.setContextRef("child");
+        final Processor processor2 = new ProcessorBase(FunctionSequencerBinding.getInstance());
+        // processor2.setContextRef("child");
         processor2.add(new Addition(new RefId<Double>("e2"), new RefId<Double>("e3"), new RefId<Double>("s2")));
         processor2.add(new Addition(new RefId<Double>("s1"), new RefId<Double>("s2"), new RefId<Double>("s3")));
 
         pool.add(processor2, processor1);
         pool.execute(root);
 
-        Assert.assertEquals(5.7, ((Context)root).get(new RefId<Double>("s1")).doubleValue(), 0.1);
-        Assert.assertEquals(-0.9, ((Context)child).get(new RefId<Double>("s2")).doubleValue(), 0.1);
-        Assert.assertEquals(4.8, ((Context)child).get(new RefId<Double>("s3")).doubleValue(), 0.1);
+        Assert.assertEquals(5.7, ((Context) root).get(new RefId<Double>("s1")).doubleValue(), 0.1);
+        Assert.assertEquals(-0.9, ((Context) child).get(new RefId<Double>("s2")).doubleValue(), 0.1);
+        Assert.assertEquals(4.8, ((Context) child).get(new RefId<Double>("s3")).doubleValue(), 0.1);
     }
 
 }

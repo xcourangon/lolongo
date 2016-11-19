@@ -1,9 +1,9 @@
 package org.lolongo;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.constraints.Problem;
@@ -15,32 +15,29 @@ import javax.constraints.Var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessorBinding extends ProcessorBase {
+public class FunctionSequencerBinding extends SimpleFunctionSequencer {
 
-    static final Logger logger = LoggerFactory.getLogger(ProcessorBinding.class);
+    static final Logger logger = LoggerFactory.getLogger(FunctionSequencerBinding.class);
 
-    @Override
-    public void execute(Context context) throws FunctionException {
-        final Collection<Function>[] steps = sort(functions, context);
-        for (final Collection<Function> step : steps) {
-            super.execute(step, context);
+    private static FunctionSequencerBinding instance;
+
+    public static FunctionSequencerBinding getInstance() {
+        if (instance == null) {
+            instance = new FunctionSequencerBinding();
         }
+        return instance;
     }
 
-    static protected Collection<Function>[] sort(Collection<Function> functions, Context context) throws DataBindingException {
+    protected FunctionSequencerBinding() {
+    }
 
+    @Override
+    public Collection<Function>[] sort(List<Function> functions, Context context) {
         final int size = functions.size();
-        if (size == 0) {
-            return new ArrayList[0];
-        }
-
-        // Optimization : no constraint computation if only one function
-        if (size == 1) {
-            logger.debug("Optimization - no constraint computation (only one function)");
-            final Set<Function> sortedFunctions[] = new HashSet[1];
-            sortedFunctions[0] = new HashSet<Function>();
-            sortedFunctions[0].addAll(functions);
-            return sortedFunctions;
+        // Optimization : no constraint computation if less than 2 functions
+        if (size < 2) {
+            logger.debug("Optimization - no constraint computation (less than 2 functions)");
+            return super.sort(functions, context);
         }
 
         final int pos_max = size - 1;
@@ -108,4 +105,5 @@ public class ProcessorBinding extends ProcessorBase {
         }
         return sortedFunctions;
     }
+
 }
