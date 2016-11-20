@@ -90,25 +90,20 @@ public final class ContextRef {
             return context;
         }
         final ContextNode contextNode = (ContextNode) context;
-        final String path[] = split(contextRef);
+        String[] path = contextRef.split(path_separator);
+        if (contextRef.startsWith(path_separator)) {
+            if (path.length == 0) {
+                path = new String[] { path_separator };
+            } else {
+                assert path[0].equals("");
+                path[0] = path_separator;
+            }
+        }
         try {
             return getContext(contextNode, path);
         } catch (ContextNotFound _) {
             throw new ContextNotFound(contextRef);
         }
-    }
-
-    protected static String[] split(String contextRef) {
-        String[] split = contextRef.split(path_separator);
-        if (contextRef.startsWith(path_separator)) {
-            if (split.length == 0) {
-                split = new String[] { path_separator };
-            } else {
-                assert split[0].equals("");
-                split[0] = path_separator;
-            }
-        }
-        return split;
     }
 
     protected static ContextNode getContext(ContextNode context, String[] path) throws ContextNotFound {
@@ -136,6 +131,7 @@ public final class ContextRef {
         }
     }
 
+    // TODO SHOULD be on ContextNode class.
     public static Collection<ContextNode> getAllSubcontext(ContextNode root, Predicate<ContextNode> predicate) {
         if (root == null) {
             throw new IllegalArgumentException("root is null");
@@ -154,6 +150,7 @@ public final class ContextRef {
         return result;
     }
 
+    // TODO MAY be on ContextNode class.
     public static Collection<ContextNode> getAllSubcontext(ContextNode root, final String name) {
         if (name == null) {
             throw new IllegalArgumentException("name is null");
@@ -192,6 +189,38 @@ public final class ContextRef {
             ContextRef.check(contextRef);
             result.add(contextRef);
         }
+        return result;
+    }
+
+    // TODO SHOULD be on ContextNode class.
+    public static Collection<ContextNode> getAllSubcontext(ContextNode root) {
+        return getAllSubcontext(root, new Predicate<ContextNode>() {
+            @Override
+            public boolean test(ContextNode c) {
+                return true;
+            }
+        });
+    }
+
+    public static List<Context> getAllContext(final ContextNode root, final List<String> contextRefs) throws ContextNotFound {
+
+        final List<Context> result = new ArrayList<>();
+
+        for (final String contextRef : contextRefs) {
+            result.add(getContext(root, contextRef));
+            result.addAll(getAllSubcontext(root, new Predicate<ContextNode>() {
+                @Override
+                public boolean test(ContextNode c) {
+                    try {
+                        return getContext(root, contextRef) == c;
+                    } catch (ContextNotFound e) {
+                        assert false : "this case should be already checked";
+                        return false;
+                    }
+                }
+            }));
+        }
+
         return result;
     }
 
