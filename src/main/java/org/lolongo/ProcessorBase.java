@@ -27,8 +27,6 @@ public class ProcessorBase extends FunctionContainer implements Processor {
         this.functionSequencer = functionSequencer;
     }
 
-    // protected Collection<String> contextRefs = Arrays.asList(".");
-
     /*
     @Override
     public void execute(Context... contexts) throws FunctionException, ContextNotFound {
@@ -37,20 +35,19 @@ public class ProcessorBase extends FunctionContainer implements Processor {
         }
     }
      */
+    
+    public void execute(Collection<Context> contexts) throws FunctionException, ContextNotFound {
+        for (Context context : contexts) {
+            execute(context);
+        }
+    }
+
     @Override
     public void execute(Context context) throws FunctionException {
         logger.debug("executing {} on {}...", this, context);
 
         final Collection<Function>[] sortedFunctions = functionSequencer.sort(functions, context);
-
-        // if (contextRefs == null) {
         execute(sortedFunctions, context);
-        /*        } else {
-        for (String contextRef : contextRefs) {
-            context = ContextRef.getContext(context, contextRef);
-            execute(functions, context);
-        }
-        }*/
     }
 
     protected static void execute(Collection<Function>[] functions, Context context) throws FunctionException {
@@ -65,66 +62,22 @@ public class ProcessorBase extends FunctionContainer implements Processor {
     public static void execute(Collection<Function> functions, Context context) throws FunctionException {
 
         for (final Function function : functions) {
-            try {
-                logger.debug("executing {} on {}...", function, context);
-                function.execute(context);
-            } catch (final ContextException e) {
-                throw new FunctionException(function, e);
-            }
+            execute(function, context);
         }
     }
 
     public static void execute(FunctionContainer functions, Context context) throws FunctionException {
         for (final Function function : functions) {
-            try {
-                logger.debug("executing {} on {}...", function, context);
-                function.execute(context);
-            } catch (final ContextException e) {
-                throw new FunctionException(function, e);
-            }
+            execute(function, context);
         }
     }
 
-    /*
-    public static void execute(Function function, Context context) throws FunctionException {
+    private static void execute(Function function, Context context) throws FunctionException {
         try {
-          logger.debug("{} is executing {} on {}",this, function,context);
+            logger.debug("{} is executing {} on {}", function, context);
             function.execute(context);
         } catch (ContextException e) {
             throw new FunctionException(function, e);
         }
-    }
-    
-    @Override
-    public void setContextRef(String contextRefList) throws IllegalArgumentException {
-        if (contextRefList == null) {
-            throw new IllegalArgumentException("contextRefs is null");
-        }
-        this.contextRefs = ContextRef.getContextRefList(contextRefList);
-        assert this.contextRefs != null;
-    }
-    
-    @Override
-    public Collection<String> getContextRef() {
-        return Collections.unmodifiableCollection(contextRefs);
-    }
-     */
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
-        /*        if (contextRefs != null) {
-        final Iterator<String> it = contextRefs.iterator();
-        sb.append("(contextRefs=");
-        for (int i = 1; i < contextRefs.size(); i++) {
-            assert it.hasNext();
-            sb.append(it.next());
-            sb.append(", ");
-        }
-        assert it.hasNext();
-        sb.append(it.next());
-        assert it.hasNext() == false;
-        sb.append(")");
-        }*/
-        return sb.toString();
     }
 }
