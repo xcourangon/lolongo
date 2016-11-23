@@ -2,38 +2,38 @@ package org.lolongo;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.lolongo.matcher.RefExceptionMatcher;
 
 public class ContextBaseTest {
 
     private Context context;
+
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void initContext() {
         context = new ContextBase();
     }
 
-    @Test(expected=RefNotFound.class)
+    @Test
     public void testRefNotFoundEmptyContext() throws Exception {
-      
-      try {
-            context.get(new RefId<>("ref1"));
-      } catch (RefNotFound e) {
-        Assert.assertEquals(new RefId<>("ref1"),e.getRef());
-        throw e;
-      }
+
+        thrown.expect(RefNotFound.class);
+        thrown.expect(new RefExceptionMatcher(new RefId<>("ref1")));
+        context.get(new RefId<>("ref1"));
     }
 
-    @Test(expected=RefNotFound.class)
+    @Test
     public void testRefNotFound() throws Exception {
-    
-      context.put(new RefId<String>("otherRef"), "Value_1");
-      try {
-            context.get(new RefId<>("ref1"));
-      } catch (RefNotFound e) {
-       Assert.assertEquals(new RefId<>("ref1"),e.getRef());
-          throw e;
-        }
+
+        context.put(new RefId<String>("otherRef"), "Value_1");
+        thrown.expect(RefNotFound.class);
+        thrown.expect(new RefExceptionMatcher(new RefId<>("ref1")));
+        context.get(new RefId<>("ref1"));
     }
 
     @Test
@@ -53,16 +53,15 @@ public class ContextBaseTest {
         Assert.assertEquals("Value_2", context.get(new RefId<String>("ref2")));
     }
 
-    @Test(expected = RefAlreadyExists.class)
+    @Test
     public void testRefUniqueInContext() throws RefAlreadyExists, RefNotFound {
 
         context.put(new RefId<String>("ref1"), "Value_1");
         try {
             context.put(new RefId<String>("ref1"), "Value_2");
+            thrown.expect(RefAlreadyExists.class);
         } catch (RefAlreadyExists e) {
             Assert.assertEquals(new RefId<String>("ref1"), e.getRef());
-            throw e;
-        } finally {
             Assert.assertEquals("Value_1", context.get(new RefId<String>("ref1")));
         }
     }
