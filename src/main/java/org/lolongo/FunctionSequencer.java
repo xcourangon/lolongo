@@ -7,4 +7,6 @@ import java.util.Map.Entry;
 public interface FunctionSequencer {
 
     Collection<Entry<Function, Context>>[] sort(List<Entry<Function, Context>> fonctions);
+
+    Collection<Entry<Function, Context>>[] sort(List<Function> functions, Context context);
 }

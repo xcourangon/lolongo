@@ -1,10 +1,11 @@
 package org.lolongo;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.constraints.Problem;
 import javax.constraints.ProblemFactory;
@@ -32,7 +33,7 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
     }
 
     @Override
-    public Collection<Function>[] sort(List<Function> functions, Context context) {
+    public Collection<Entry<Function, Context>>[] sort(List<Function> functions, Context context) {
         final int size = functions.size();
         // Optimization : no constraint computation if less than 2 functions
         if (size < 2) {
@@ -83,22 +84,22 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
         // Initialize sortedFunctions array
         logger.debug("nb of steps = " + nb_of_steps.getValue());
         final int steps = nb_of_steps.getValue();
-        final Set<Function> sortedFunctions[] = new HashSet[steps];
+        final Collection<Entry<Function, Context>>[] sortedFunctions = new HashSet[steps];
         for (int s = 0; s < steps; s++) {
-            sortedFunctions[s] = new HashSet<Function>();
+            sortedFunctions[s] = new HashSet<Entry<Function, Context>>();
         }
 
         int f = 0;
         for (final Function function : functions) {
             final int pos = pos_f[f].getValue();
-            sortedFunctions[pos].add(function);
+            sortedFunctions[pos].add(new AbstractMap.SimpleEntry(function, context));
             logger.debug(pos_f[f].getObject() + " = " + pos_f[f].getValue());
             f++;
         }
 
         if (logger.isDebugEnabled()) {
             int stepIndex = 0;
-            for (final Set<Function> step : sortedFunctions) {
+            for (final Collection<Entry<Function, Context>> step : sortedFunctions) {
                 logger.debug("Step " + stepIndex + " => " + step);
                 stepIndex++;
             }

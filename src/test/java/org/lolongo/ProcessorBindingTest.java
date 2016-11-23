@@ -21,28 +21,6 @@ public class ProcessorBindingTest {
         processor = new ProcessorBase(FunctionSequencerBinding.getInstance());
     }
 
-    // @Test
-    // public void testSort2Unordered() throws Exception {
-    // final Collection<Function> functions = new ArrayList<>();
-    // final Quote quote = new Quote(new RefId<String>("upper"), new
-    // RefId<String>("quoted"));
-    // functions.add(quote);
-    // final ToUpperCase toUpperCase = new ToUpperCase(new RefId<String>("in"),
-    // new RefId<String>("upper"));
-    // functions.add(toUpperCase);
-    // final Collection<Function>[] sortedFunctions =
-    // ProcessorBinding.sort(functions, context);
-    //
-    // Assert.assertEquals(2, sortedFunctions.length);
-    // final Collection<Function> step1 = sortedFunctions[0];
-    // Assert.assertEquals(1, step1.size());
-    // Assert.assertEquals(toUpperCase, step1.iterator().next());
-    //
-    // final Collection<Function> step2 = sortedFunctions[1];
-    // Assert.assertEquals(1, step2.size());
-    // Assert.assertEquals(quote, step2.iterator().next());
-    // }
-
     @Test
     public void test2Unordered() throws Exception {
         context.put(new RefId<String>("in"), "value");
@@ -52,36 +30,6 @@ public class ProcessorBindingTest {
         Assert.assertEquals("VALUE", context.get(new RefId<String>("upper")));
         Assert.assertEquals("'VALUE'", context.get(new RefId<String>("quoted")));
     }
-
-    // @Test
-    // public void testSort3Unordered() throws Exception {
-    // final Collection<Function> functions = new ArrayList<>();
-    // final Identity identity = new Identity(new RefId<String>("upper"), new
-    // RefId<String>("tmp"));
-    // functions.add(identity);
-    // final Quote quote = new Quote(new RefId<String>("tmp"), new
-    // RefId<String>("quoted"));
-    // functions.add(quote);
-    // final ToUpperCase toUpperCase = new ToUpperCase(new RefId<String>("in"),
-    // new RefId<String>("upper"));
-    // functions.add(toUpperCase);
-    //
-    // final Collection<Function>[] sortedFunctions =
-    // ProcessorBinding.sort(functions, context);
-    //
-    // Assert.assertEquals(3, sortedFunctions.length);
-    // final Collection<Function> step1 = sortedFunctions[0];
-    // Assert.assertEquals(1, step1.size());
-    // Assert.assertEquals(toUpperCase, step1.iterator().next());
-    //
-    // final Collection<Function> step2 = sortedFunctions[1];
-    // Assert.assertEquals(1, step2.size());
-    // Assert.assertEquals(identity, step2.iterator().next());
-    //
-    // final Collection<Function> step3 = sortedFunctions[2];
-    // Assert.assertEquals(1, step3.size());
-    // Assert.assertEquals(quote, step3.iterator().next());
-    // }
 
     @Test
     public void test3Unordered() throws Exception {
@@ -127,45 +75,6 @@ public class ProcessorBindingTest {
         Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
         Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out2")));
     }
-
-    // @Test
-    // public void testSort2Functions1Step() throws Exception {
-    // final Collection<Function> functions = new ArrayList<>();
-    // final Addition add1 = new Addition(new RefId<Double>("a"), new
-    // RefId<Double>("b"), new RefId<Double>("c"));
-    // functions.add(add1);
-    // final Addition add2 = new Addition(new RefId<Double>("a"), new
-    // RefId<Double>("d"), new RefId<Double>("e"));
-    // functions.add(add2);
-    // final Collection<Function>[] steps = ProcessorBinding.sort(functions,
-    // context);
-    // Assert.assertEquals(1, steps.length);
-    // Assert.assertEquals(2, steps[0].size());
-    // Assert.assertTrue(steps[0].contains(add1));
-    // Assert.assertTrue(steps[0].contains(add2));
-    // }
-
-    // @Test
-    // public void testSort3Functions2Steps() throws Exception {
-    // final Collection<Function> functions = new ArrayList<>();
-    // final Addition add1 = new Addition(new RefId<Double>("a"), new
-    // RefId<Double>("b"), new RefId<Double>("c"));
-    // functions.add(add1);
-    // final Addition add2 = new Addition(new RefId<Double>("d"), new
-    // RefId<Double>("e"), new RefId<Double>("f"));
-    // functions.add(add2);
-    // final Addition add3 = new Addition(new RefId<Double>("c"), new
-    // RefId<Double>("f"), new RefId<Double>("g"));
-    // functions.add(add3);
-    // final Collection<Function>[] steps = ProcessorBinding.sort(functions,
-    // context);
-    // Assert.assertEquals(2, steps.length);
-    // Assert.assertEquals(2, steps[0].size());
-    // Assert.assertTrue(steps[0].contains(add1));
-    // Assert.assertTrue(steps[0].contains(add2));
-    // Assert.assertEquals(1, steps[1].size());
-    // Assert.assertTrue(steps[1].contains(add3));
-    // }
 
     @Test
     public void test2() throws Exception {
