@@ -40,16 +40,17 @@ public abstract class CompositeFunction extends FunctionContainer implements Fun
     @Override
     public final void execute(Context context) throws FunctionException, ContextException {
         logger.debug("Executing Composite function...");
-        CompositeFunction.execute(this, context);
-    }
-
-    public static void execute(final CompositeFunction compositeFunction, Context context) throws FunctionException, ContextException {
         final Context internalContext = new InternalContext(context);
-        ProcessorBase.execute(compositeFunction, internalContext);
+        // TODO Need to choose the FunctionSequencer
+        ProcessorBase.execute(this, internalContext);
         final FunctionContainer container = new FunctionContainer();
-        compositeFunction.prepare(container, internalContext);
+        logger.debug("Preparing {} on {}...", this, internalContext);
+        prepare(container, internalContext);
+        logger.debug("Executing {} on {}...", container, internalContext);
+        // TODO Need to choose the FunctionSequencer
         ProcessorBase.execute(container, internalContext);
-        compositeFunction.resolve(internalContext);
+        logger.debug("Resolving {} on {}...", this, internalContext);
+        resolve(internalContext);
     }
 
     public void prepare(FunctionContainer container, Context context) throws FunctionException, ContextException {
@@ -59,6 +60,6 @@ public abstract class CompositeFunction extends FunctionContainer implements Fun
     }
 
     public void onError(Context context, FunctionException cause) throws FunctionException {
-      throw cause;
+        throw cause;
     }
 }

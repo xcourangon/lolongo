@@ -1,157 +1,125 @@
 package org.lolongo;
 
-import java.util.Map.Entry;
-
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.lolongo.function.Identity;
+import org.junit.rules.ExpectedException;
 import org.lolongo.function.Quote;
 import org.lolongo.function.ToUpperAndQuote;
 import org.lolongo.function.ToUpperAndQuote2;
+import org.lolongo.function.ToUpperAndQuote3;
 import org.lolongo.function.ToUpperCase;
+import org.lolongo.matcher.RefExceptionMatcher;
 
 public class CompositeProcessorTest {
 
-    private Processor processor;
-    private ContextBase context;
+	private Processor processor;
+	private Context context;
 
-    @Before
-    public void initContext() {
-	context = new ContextBase();
-	processor = new CompositeProcessor();
-    }
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
-    /**
-     * A CompositeFunction can be executed by a CompositeProcessor
-     */
-    @Test
-    public void testCompositeFunction() throws Exception {
-	context.put(new RefId<String>("in"), "value");
-	processor.add(new ToUpperAndQuote(new RefId<String>("in"), new RefId<String>("out")));
-	processor.execute(context);
-	Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
-    }
-
-    /**
-     * An InternalRef used within a CompositeFunction must not be found in the
-     * execution Context
-     */
-    @Test(expected = RefNotFound.class)
-    public void testInternalRefNotFound() throws Exception {
-	try {
-	    context.put(new RefId<String>("in"), "value");
-	    processor.add(new ToUpperAndQuote(new RefId<String>("in"), new RefId<String>("out")));
-	    processor.execute(context);
-	} catch (final Exception e) {
-	    Assert.fail();
+	@Before
+	public void initContext() {
+		context = new ContextBase();
+		processor = new CompositeProcessor();
 	}
-	context.get(new InternalRef<String>("tmp"));
-    }
 
-    /**
-     * A CompositeFunction prepare/resolve can be executed by a
-     * CompositeProcessor
-     */
-    @Test
-    public void testCompositeFunction2() throws Exception {
-	context.put(new RefId<String>("in"), "value");
-	processor.add(new ToUpperAndQuote2(new RefId<String>("in"), new RefId<String>("out")));
-	processor.execute(context);
-	Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
-    }
-
-    /**
-     * When a CompositeFunction prepare/resolve is executed by a
-     * CompositeProcessor no InternalRef is visible in the execution Context.
-     */
-    @Test(expected = RefNotFound.class)
-    public void testInternalRefNotFound2() throws Exception {
-	try {
-	    context.put(new RefId<String>("in"), "value");
-	    processor.add(new ToUpperAndQuote2(new RefId<String>("in"), new RefId<String>("out")));
-	    processor.execute(context);
-	} catch (final Exception e) {
-	    throw new AssertionError(e);
+	/**
+	 * A CompositeProcessor can execute a simple Function.
+	 */
+	@Test
+	public void testToUpperCase() throws Exception {
+		context.put(new RefId<String>("in"), "value");
+		processor.add(new ToUpperCase(new RefId<String>("in"), new RefId<String>("out")));
+		processor.execute(context);
+		Assert.assertEquals("VALUE", context.get(new RefId<String>("out")));
 	}
-	context.get(new InternalRef<String>("tmp"));
-    }
 
-    @Test
-    public void testCompositeFunction3() throws Exception {
-	context.put(new RefId<String>("in"), "value");
-	processor.add(new Identity(new RefId<String>("in"), new RefId<String>("tmp")));
-	processor.add(new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out")));
-	processor.add(new Identity(new RefId<String>("out"), new RefId<String>("out2")));
-	processor.execute(context);
-	Assert.assertEquals("value", context.get(new RefId<String>("in")));
-	Assert.assertEquals("value", context.get(new RefId<String>("tmp")));
-	Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
-	Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out2")));
-    }
-
-    @Test
-    public void testPrepareCompositeFunction3() throws Exception {
-	context.put(new RefId<String>("in"), "value");
-	final Identity f1 = new Identity(new RefId<String>("in"), new RefId<String>("tmp"));
-	processor.add(f1);
-	final ToUpperAndQuote2 f2 = new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out"));
-	processor.add(f2);
-	final Identity f3 = new Identity(new RefId<String>("out"), new RefId<String>("out2"));
-	processor.add(f3);
-
-	final CompositeFunctionContainer chain = new CompositeFunctionContainer(context);
-	((CompositeProcessor) processor).prepare(chain, context);
-
-	int i = 0;
-	Context internalContext = null;
-	for (final Entry<Function, Context> entry : chain) {
-	    final Function function = entry.getKey();
-	    final Context c = entry.getValue();
-	    switch (i) {
-	    case 0:
-		Assert.assertEquals(function, f1);
-		Assert.assertEquals(context, c);
-		break;
-	    case 1:
-		Assert.assertEquals(ToUpperCase.class, function.getClass());
-		Assert.assertNotNull(c);
-		Assert.assertNotEquals(context, c);
-		Assert.assertEquals(InternalContext.class, c.getClass());
-		internalContext = c;
-		assert internalContext != null;
-		break;
-	    case 2:
-		Assert.assertEquals(Quote.class, function.getClass());
-		assert internalContext != null;
-		Assert.assertEquals(internalContext, c);
-		break;
-	    case 3:
-		Assert.assertEquals(function, f2);
-		assert internalContext != null;
-		Assert.assertEquals(internalContext, c);
-		break;
-	    case 4:
-		Assert.assertEquals(function, f3);
-		Assert.assertEquals(context, c);
-		break;
-	    }
-	    i++;
+	/**
+	 * A CompositeProcessor can execute a static CompositeFunction.
+	 */
+	@Test
+	public void testToUpperAndQuote() throws Exception {
+		context.put(new RefId<String>("in"), "value");
+		processor.add(new ToUpperAndQuote(new RefId<String>("in"), new RefId<String>("out")));
+		processor.execute(context);
+		Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
+		thrown.expect(RefNotFound.class);
+		thrown.expect(new RefExceptionMatcher(new InternalRef<String>("tmp")));
+		context.get(new InternalRef<String>("tmp"));
 	}
-	Assert.assertEquals(5, i);
-    }
 
-    @Test(expected = RefNotFound.class)
-    public void testCompositeFunction3Notfound() throws Exception {
-	try {
-	    context.put(new RefId<String>("in"), "value");
-	    processor.add(new Identity(new RefId<String>("in"), new RefId<String>("tmp")));
-	    processor.add(new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out")));
-	    processor.add(new Identity(new RefId<String>("out"), new RefId<String>("out2")));
-	    processor.execute(context);
-	} catch (final Exception e) {
-	    throw new AssertionError(e);
+	/**
+	 * A CompositeProcessor can execute a dynamic CompositeFunction.
+	 */
+	@Test
+	public void testToUpperAndQuote2() throws Exception {
+		context.put(new RefId<String>("in"), "value");
+		processor.add(new ToUpperAndQuote2(new RefId<String>("in"), new RefId<String>("out")));
+		processor.execute(context);
+		Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
+		thrown.expect(RefNotFound.class);
+		thrown.expect(new RefExceptionMatcher(new InternalRef<String>("tmp")));
+		context.get(new InternalRef<String>("tmp"));
 	}
-	context.get(new InternalRef<String>("tmp"));
-    }
+
+	@Test
+	public void testToUpperAndQuote3() throws Exception {
+		context.put(new RefId<String>("in"), "value");
+		processor.add(new ToUpperAndQuote3(new RefId<String>("in"), new RefId<String>("out")));
+		processor.execute(context);
+		Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
+		thrown.expect(RefNotFound.class);
+		thrown.expect(new RefExceptionMatcher(new InternalRef<String>("tmp")));
+		context.get(new InternalRef<String>("tmp"));
+	}
+
+	/**
+	 * A CompositeProcessor can execute a mix of static and dynamic CompositeFunction.
+	 * 
+	 */
+	@Test
+	public void testMixedCompositeFunction() throws Exception {
+		context.put(new RefId<String>("in"), "value");
+		processor.add(new Quote(new RefId<String>("in"), new RefId<String>("tmp")));
+		processor.add(new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out")));
+		processor.add(new Quote(new RefId<String>("out"), new RefId<String>("out2")));
+		processor.execute(context);
+		Assert.assertEquals("value", context.get(new RefId<String>("in")));
+		Assert.assertEquals("'value'", context.get(new RefId<String>("tmp")));
+		Assert.assertEquals("''VALUE''", context.get(new RefId<String>("out")));
+		Assert.assertEquals("'''VALUE'''", context.get(new RefId<String>("out2")));
+	}
+
+	/**
+	 * Execute two Simple parallel functions (no order)
+	 */
+	@Test
+	public void testExecute2SimpleFunctionsParallel() throws Exception {
+		context.put(new RefId<String>("in1"), "value1");
+		context.put(new RefId<String>("in2"), "value2");
+		processor.add(new ToUpperCase(new RefId<String>("in1"), new RefId<String>("out1")));
+		processor.add(new Quote(new RefId<String>("in2"), new RefId<String>("out2")));
+		processor.execute(context);
+		Assert.assertEquals("VALUE1", context.get(new RefId<String>("out1")));
+		Assert.assertEquals("'value2'", context.get(new RefId<String>("out2")));
+	}
+
+	/**
+	 * Execute two CompositeFunction parallel functions (no order)
+	 */
+	@Test
+	public void testExecute2CompositeFunctionsParallel() throws Exception {
+		//		processor.setFunctionSequencer(FunctionSequencerBinding.getInstance());
+		context.put(new RefId<String>("in1"), "value1");
+		context.put(new RefId<String>("in2"), "value2");
+		processor.add(new ToUpperAndQuote(new RefId<String>("in1"), new RefId<String>("out1")));
+		processor.add(new ToUpperAndQuote(new RefId<String>("in2"), new RefId<String>("out2")));
+		processor.execute(context);
+		Assert.assertEquals("'VALUE1'", context.get(new RefId<String>("out1")));
+		Assert.assertEquals("'VALUE2'", context.get(new RefId<String>("out2")));
+	}
+
 }

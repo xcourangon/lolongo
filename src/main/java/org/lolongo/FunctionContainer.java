@@ -14,45 +14,50 @@ import org.slf4j.LoggerFactory;
  */
 public class FunctionContainer implements Iterable<Function> {
 
-    private static Logger logger = LoggerFactory.getLogger(FunctionContainer.class);
+	private static Logger logger = LoggerFactory.getLogger(FunctionContainer.class);
 
-    final List<Function> functions = new ArrayList<>();
+	final List<Function> functions = new ArrayList<>();
 
-    public FunctionContainer() {
-    }
+	public FunctionContainer() {
+	}
 
-    // public FunctionContainer(Collection<Function> functions) {
-    // for (final Function function : functions) {
-    // this.functions.add(function);
-    // }
-    // }
+	// public FunctionContainer(Collection<Function> functions) {
+	// for (final Function function : functions) {
+	// this.functions.add(function);
+	// }
+	// }
 
-    public void add(Function function) {
-        if (function == null) {
-            throw new IllegalArgumentException("function is null");
-        } else {
-            logger.debug("adding Function {} into {}", function, this);
-            functions.add(function);
-        }
-    }
-    /*
-      public void add(CompositeFunction functions) {
-       if (functions == null) {
-    			throw new IllegalArgumentException("functions is null");
-       } else {
-    	       Collections.addAll(this.functions, functions);
-       }
-    }
-    */
+	public void add(Function function) {
+		if (function == null) {
+			throw new IllegalArgumentException("function is null");
+		} else {
+			logger.debug("adding Function {} into {}", function, this);
+			functions.add(function);
+		}
+	}
 
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
-        return sb.toString();
-    }
+	public boolean contains(Function function) {
+		return functions.contains(function);
+	}
 
-    @Override
-    public Iterator<Function> iterator() {
-        return functions.iterator();
-    };
+	/*
+	  public void add(CompositeFunction functions) {
+	   if (functions == null) {
+				throw new IllegalArgumentException("functions is null");
+	   } else {
+		       Collections.addAll(this.functions, functions);
+	   }
+	}
+	*/
+
+	@Override
+	public String toString() {
+		final StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+		return sb.toString();
+	}
+
+	@Override
+	public Iterator<Function> iterator() {
+		return functions.iterator();
+	};
 }
