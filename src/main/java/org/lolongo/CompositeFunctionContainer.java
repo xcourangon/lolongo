@@ -27,7 +27,7 @@ public class CompositeFunctionContainer extends ArrayList<Entry<Function, Contex
 
 	public void add(CompositeFunction compositeFunction, Context context) {
 		for (final Function function : compositeFunction) {
-			add(function, context);
+			add(new ComponentFunction(compositeFunction, function), context);
 		}
 	}
 

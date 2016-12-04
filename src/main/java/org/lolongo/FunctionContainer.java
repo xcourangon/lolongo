@@ -36,20 +36,6 @@ public class FunctionContainer implements Iterable<Function> {
 		}
 	}
 
-	public boolean contains(Function function) {
-		return functions.contains(function);
-	}
-
-	/*
-	  public void add(CompositeFunction functions) {
-	   if (functions == null) {
-				throw new IllegalArgumentException("functions is null");
-	   } else {
-		       Collections.addAll(this.functions, functions);
-	   }
-	}
-	*/
-
 	@Override
 	public String toString() {
 		final StringBuffer sb = new StringBuffer(getClass().getSimpleName());

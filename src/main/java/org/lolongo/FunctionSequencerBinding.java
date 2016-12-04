@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.constraints.Constraint;
 import javax.constraints.Problem;
 import javax.constraints.ProblemFactory;
 import javax.constraints.Solution;
@@ -50,27 +49,31 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
 				final Context context_j = entry_j.getValue();
 				final Function fj = entry_j.getKey();
 
+				// Data Binding rules
 				if (!Collections.disjoint(DataBindingUtils.getInputBindings(context_i, fi), DataBindingUtils.getOutputBindings(context_j, fj))) {
-					final Constraint constraint = p.post(j, "<", i);
+					p.post(j, "<", i);
 					logger.debug(fj + " < " + fi);
 				}
 				if (!Collections.disjoint(DataBindingUtils.getOutputBindings(context_i, fi), DataBindingUtils.getInputBindings(context_j, fj))) {
 					p.post(i, "<", j);
 					logger.debug(fi + " < " + fj);
 				}
-				if (fi instanceof CompositeFunction) {
-					final CompositeFunction comp = (CompositeFunction) fi;
-					if (comp.contains(fj)) {
 
+				// CompositeFunction rules
+				if (fi instanceof CompositeFunction && fj instanceof ComponentFunction) {
+					final CompositeFunction compositeFunction = (CompositeFunction) fi;
+					final ComponentFunction componentFunction = (ComponentFunction) fj;
+					if (componentFunction.hasParent(compositeFunction)) {
 						p.post(j, "<", i);
 						logger.debug(fj + " < " + fi);
 					}
 				}
-				if (fj instanceof CompositeFunction) {
-					final CompositeFunction comp = (CompositeFunction) fj;
-					if (comp.contains(fi)) {
+				if (fj instanceof CompositeFunction && fi instanceof ComponentFunction) {
+					final CompositeFunction compositeFunction = (CompositeFunction) fj;
+					final ComponentFunction componentFunction = (ComponentFunction) fi;
+					if (componentFunction.hasParent(compositeFunction)) {
 						p.post(i, "<", j);
-						logger.debug(fj + " < " + fj);
+						logger.debug(fi + " < " + fj);
 					}
 				}
 			}
@@ -91,6 +94,7 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
 		final int steps = nb_of_steps.getValue();
 		logger.debug("nb of steps = " + steps);
 
+		p.log(vars);
 		return steps;
 
 	}
@@ -130,7 +134,6 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
 		}
 
 		if (logger.isDebugEnabled()) {
-			p.log(pos_f);
 			log(sortedFunctions);
 		}
 		return sortedFunctions;
@@ -170,17 +173,7 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
 		}
 
 		if (logger.isDebugEnabled()) {
-			p.log(pos_f);
-			int step = 1;
-			for (Collection<Function> list : sortedFunctions) {
-				final StringBuilder sb = new StringBuilder("[ ");
-				for (Function f : list) {
-					sb.append(f);
-					sb.append(" ");
-				}
-				sb.append("]");
-				logger.debug("Step {} - {}", step++, sb.toString());
-			}
+			log(sortedFunctions);
 		}
 		return sortedFunctions;
 	}

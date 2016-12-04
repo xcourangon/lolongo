@@ -45,7 +45,9 @@ public class CompositeProcessor extends ProcessorBase {
 					logger.debug("- preparing Composite function {}", function);
 					final FunctionContainer functionContainer = new FunctionContainer();
 					compositeFunction.prepare(functionContainer, internalContext);
-					container.add(functionContainer, internalContext);
+					for (Function compositeFunctionDyn : functionContainer) {
+						container.add(new ComponentFunction(compositeFunction, compositeFunctionDyn), internalContext);
+					}
 					container.add(function, internalContext);
 				} else {
 					container.add(function);
