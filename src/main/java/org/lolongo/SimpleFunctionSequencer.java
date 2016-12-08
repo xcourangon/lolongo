@@ -61,7 +61,7 @@ public class SimpleFunctionSequencer implements FunctionSequencer {
 				sb.append(" ");
 			}
 			sb.append("]");
-			logger.debug("Step {} - {}", step++, sb.toString());
+			logger.debug("Step {} [{}] - {}", step++, list.size(), sb.toString());
 		}
 	}
 }

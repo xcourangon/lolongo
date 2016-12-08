@@ -6,30 +6,25 @@ import org.lolongo.ContextException;
 import org.lolongo.Function;
 import org.lolongo.FunctionException;
 import org.lolongo.InputBinding;
-import org.lolongo.OutputBinding;
 import org.lolongo.Ref;
-import org.lolongo.RefId;
 
-public class ToUpperCase implements Function {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class SimpleFunction1in0out implements Function {
 
 	@InputBinding
-	public Ref<String> refIn = new RefId<String>("in");
+	private Ref<?> in;
 
-	@OutputBinding
-	public Ref<String> refOut = new RefId<String>("out");
-
-	public ToUpperCase(Ref<String> in, Ref<String> out) {
-		refIn = in;
-		refOut = out;
+	public <T> SimpleFunction1in0out(Ref<T> in) {
+		this.in = in;
 	}
 
 	@Override
 	public void execute(Context context) throws FunctionException, ContextException {
-		context.put(refOut, context.get(refIn).toUpperCase());
+		context.get(in);
 	}
 
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
-	}
+	};
 }

@@ -3,8 +3,11 @@ package org.lolongo;
 import java.util.Collection;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.lolongo.function.Quote;
 import org.lolongo.function.ToUpperAndQuote;
@@ -15,6 +18,17 @@ public class CompositeFunctionSequencerBindingTest {
 	private ContextBase context;
 	private CompositeProcessor processor;
 	private FunctionSequencer sorter;
+
+	private static RefId<String> in1 = new RefId<String>("in1");
+	private static RefId<String> in2 = new RefId<String>("in2");
+	private static RefId<String> out1 = new RefId<String>("out1");
+	private static RefId<String> out2 = new RefId<String>("out2");
+	private static RefId<String> tmp = new RefId<String>("tmp");
+
+	@BeforeClass
+	public static void initStatic() {
+		ToStringBuilder.setDefaultStyle(ToStringStyle.SHORT_PREFIX_STYLE);
+	}
 
 	@Before
 	public void init() {
@@ -32,9 +46,9 @@ public class CompositeFunctionSequencerBindingTest {
 	 */
 	@Test
 	public void testSort2CompositeFunctionsParallel() throws Exception {
-		final Function comp1 = new ToUpperAndQuote(new RefId<String>("in1"), new RefId<String>("out1"));
+		final Function comp1 = new ToUpperAndQuote(in1, out1);
 		processor.add(comp1);
-		final Function comp2 = new ToUpperAndQuote(new RefId<String>("in2"), new RefId<String>("out2"));
+		final Function comp2 = new ToUpperAndQuote(in2, out2);
 		processor.add(comp2);
 
 		// prepare functions
@@ -102,9 +116,9 @@ public class CompositeFunctionSequencerBindingTest {
 	 */
 	@Test
 	public void testSort1Function1CompositeFunctionsParallel() throws Exception {
-		final Function comp1 = new ToUpperCase(new RefId<String>("in1"), new RefId<String>("out1"));
+		final Function comp1 = new ToUpperCase(in1, out2);
 		processor.add(comp1);
-		final Function comp2 = new ToUpperAndQuote(new RefId<String>("in2"), new RefId<String>("out2"));
+		final Function comp2 = new ToUpperAndQuote(in2, out2);
 		processor.add(comp2);
 
 		// prepare functions
@@ -164,11 +178,11 @@ public class CompositeFunctionSequencerBindingTest {
 	 */
 	@Test
 	public void testSort2Function1CompositeFunctionsParallel() throws Exception {
-		final Function toUpperCase = new ToUpperCase(new RefId<String>("in1"), new RefId<String>("tmp"));
+		final Function toUpperCase = new ToUpperCase(in1, tmp);
 		processor.add(toUpperCase);
-		final Function quote = new Quote(new RefId<String>("tmp"), new RefId<String>("out1"));
+		final Function quote = new Quote(tmp, out1);
 		processor.add(quote);
-		final Function comp = new ToUpperAndQuote(new RefId<String>("in2"), new RefId<String>("out2"));
+		final Function comp = new ToUpperAndQuote(in2, out2);
 		processor.add(comp);
 
 		// prepare functions

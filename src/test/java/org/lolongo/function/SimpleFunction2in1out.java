@@ -8,28 +8,30 @@ import org.lolongo.FunctionException;
 import org.lolongo.InputBinding;
 import org.lolongo.OutputBinding;
 import org.lolongo.Ref;
-import org.lolongo.RefId;
 
-public class ToUpperCase implements Function {
+public class SimpleFunction2in1out implements Function {
 
 	@InputBinding
-	public Ref<String> refIn = new RefId<String>("in");
+	private Ref<?> in1;
+	@InputBinding
+	private Ref<?> in2;
 
 	@OutputBinding
-	public Ref<String> refOut = new RefId<String>("out");
+	private Ref<String> out;
 
-	public ToUpperCase(Ref<String> in, Ref<String> out) {
-		refIn = in;
-		refOut = out;
+	public <T> SimpleFunction2in1out(Ref<T> in1, Ref<T> in2, Ref<String> out) {
+		this.in1 = in1;
+		this.in2 = in2;
+		this.out = out;
 	}
 
 	@Override
 	public void execute(Context context) throws FunctionException, ContextException {
-		context.put(refOut, context.get(refIn).toUpperCase());
+		context.put(out, context.get(in1).toString() + context.get(in2).toString());
 	}
 
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
-	}
+	};
 }
