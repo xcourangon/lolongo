@@ -18,7 +18,7 @@ public class ProcessorBindingTest {
 	@Before
 	public void initContext() {
 		context = new ContextBase();
-		processor = new ProcessorBase(FunctionSequencerBinding.getInstance());
+		processor = new ProcessorBase(new FunctionSequencerBinding());
 	}
 
 	@Test

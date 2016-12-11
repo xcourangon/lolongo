@@ -4,9 +4,12 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.constraints.Problem;
 import javax.constraints.ProblemFactory;
@@ -21,60 +24,69 @@ public class FunctionSequencerBinding extends SimpleFunctionSequencer {
 
 	static final Logger logger = LoggerFactory.getLogger(FunctionSequencerBinding.class);
 
-	private static FunctionSequencerBinding instance;
+	private ProblemBuilder problemBuilder;
 
-	public static FunctionSequencerBinding getInstance() {
-		if (instance == null) {
-			instance = new FunctionSequencerBinding();
-		}
-		return instance;
+	public FunctionSequencerBinding() {
 	}
 
-	protected FunctionSequencerBinding() {
+	public FunctionSequencerBinding(ProblemBuilder problemBuilder) {
+		this.problemBuilder = problemBuilder;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static int solve(Problem p) {
+	private int solve(Problem p) {
+
+		// DataBinding are cached
+		final Map<Entry<Function, Context>, Set<Ref<?>>> inputBindingsCache = new HashMap<>();
+		final Map<Entry<Function, Context>, Set<Ref<?>>> outputBindingsCache = new HashMap<>();
 
 		final Var[] vars = p.getVars();
 		for (final Var i : vars) {
 			for (final Var j : vars) {
+
+				// so self constraint
 				if (i == j) {
 					break;
 				}
+
 				final Entry<Function, Context> entry_i = (Entry<Function, Context>) i.getObject();
-				final Context context_i = entry_i.getValue();
-				final Function fi = entry_i.getKey();
 				final Entry<Function, Context> entry_j = (Entry<Function, Context>) j.getObject();
-				final Context context_j = entry_j.getValue();
-				final Function fj = entry_j.getKey();
 
-				// Data Binding rules
-				if (!Collections.disjoint(DataBindingUtils.getInputBindings(context_i, fi), DataBindingUtils.getOutputBindings(context_j, fj))) {
+				// DataBinding are cached
+				Set<Ref<?>> inputBindings_i = inputBindingsCache.get(entry_i);
+				if (inputBindings_i == null) {
+					inputBindings_i = DataBindingUtils.getInputBindings(entry_i);
+					inputBindingsCache.put(entry_i, inputBindings_i);
+				}
+				Set<Ref<?>> outputBindings_i = outputBindingsCache.get(entry_i);
+				if (outputBindings_i == null) {
+					outputBindings_i = DataBindingUtils.getOutputBindings(entry_i);
+					outputBindingsCache.put(entry_i, outputBindings_i);
+				}
+				Set<Ref<?>> inputBindings_j = inputBindingsCache.get(entry_j);
+				if (inputBindings_j == null) {
+					inputBindings_j = DataBindingUtils.getInputBindings(entry_j);
+					inputBindingsCache.put(entry_j, inputBindings_j);
+				}
+				Set<Ref<?>> outputBindings_j = outputBindingsCache.get(entry_j);
+				if (outputBindings_j == null) {
+					outputBindings_j = DataBindingUtils.getOutputBindings(entry_j);
+					outputBindingsCache.put(entry_j, outputBindings_j);
+				}
+
+				// Native binding rules
+				if (!Collections.disjoint(inputBindings_i, outputBindings_j)) {
 					p.post(j, "<", i);
-					logger.debug(fj + " < " + fi);
+					logger.debug(entry_j.getKey() + " < " + entry_i.getKey());
 				}
-				if (!Collections.disjoint(DataBindingUtils.getOutputBindings(context_i, fi), DataBindingUtils.getInputBindings(context_j, fj))) {
+				if (!Collections.disjoint(outputBindings_i, inputBindings_j)) {
 					p.post(i, "<", j);
-					logger.debug(fi + " < " + fj);
+					logger.debug(entry_i.getKey() + " < " + entry_j.getKey());
 				}
 
-				// CompositeFunction rules
-				if (fi instanceof CompositeFunction && fj instanceof ComponentFunction) {
-					final CompositeFunction compositeFunction = (CompositeFunction) fi;
-					final ComponentFunction componentFunction = (ComponentFunction) fj;
-					if (componentFunction.hasParent(compositeFunction)) {
-						p.post(j, "<", i);
-						logger.debug(fj + " < " + fi);
-					}
-				}
-				if (fj instanceof CompositeFunction && fi instanceof ComponentFunction) {
-					final CompositeFunction compositeFunction = (CompositeFunction) fj;
-					final ComponentFunction componentFunction = (ComponentFunction) fi;
-					if (componentFunction.hasParent(compositeFunction)) {
-						p.post(i, "<", j);
-						logger.debug(fi + " < " + fj);
-					}
+				// Delegate additional constraints management
+				if (problemBuilder != null) {
+					problemBuilder.addConstraints(p, i, j);
 				}
 			}
 		}

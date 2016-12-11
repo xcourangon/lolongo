@@ -32,7 +32,7 @@ public class SimpleFunctionSequencerBindingTest {
 	@Before
 	public void init() {
 		context = new ContextBase();
-		sorter = FunctionSequencerBinding.getInstance();
+		sorter = new FunctionSequencerBinding();
 	}
 
 	/**

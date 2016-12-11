@@ -37,7 +37,7 @@ public class Sort2ChainedCompositeFunctions {
 	public void init() {
 		context = new ContextBase();
 		processor = new CompositeProcessor();
-		sorter = FunctionSequencerBinding.getInstance();
+		sorter = new FunctionSequencerBinding(processor);
 	}
 
 	/**

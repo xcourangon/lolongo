@@ -3,10 +3,13 @@ package org.lolongo;
 import java.util.Collection;
 import java.util.Map.Entry;
 
+import javax.constraints.Problem;
+import javax.constraints.Var;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CompositeProcessor extends ProcessorBase {
+public class CompositeProcessor extends ProcessorBase implements ProblemBuilder {
 
 	private static final Logger logger = LoggerFactory.getLogger(CompositeProcessor.class);
 
@@ -90,6 +93,31 @@ public class CompositeProcessor extends ProcessorBase {
 			resolve(collection);
 		}
 
+	}
+
+	@Override
+	public void addConstraints(Problem p, Var i, Var j) {
+
+		final Entry<Function, Context> entry_i = (Entry<Function, Context>) i.getObject();
+		final Entry<Function, Context> entry_j = (Entry<Function, Context>) j.getObject();
+
+		// CompositeFunction rules
+		if (entry_i.getKey() instanceof CompositeFunction && entry_j.getKey() instanceof ComponentFunction) {
+			final CompositeFunction compositeFunction = (CompositeFunction) entry_i.getKey();
+			final ComponentFunction componentFunction = (ComponentFunction) entry_j.getKey();
+			if (componentFunction.hasParent(compositeFunction)) {
+				p.post(j, "<", i);
+				logger.debug(entry_j.getKey() + " < " + entry_i.getKey());
+			}
+		}
+		if (entry_j.getKey() instanceof CompositeFunction && entry_i.getKey() instanceof ComponentFunction) {
+			final CompositeFunction compositeFunction = (CompositeFunction) entry_j.getKey();
+			final ComponentFunction componentFunction = (ComponentFunction) entry_i.getKey();
+			if (componentFunction.hasParent(compositeFunction)) {
+				p.post(i, "<", j);
+				logger.debug(entry_i.getKey() + " < " + entry_j.getKey());
+			}
+		}
 	}
 
 }
