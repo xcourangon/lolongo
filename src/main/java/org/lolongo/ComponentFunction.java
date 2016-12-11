@@ -1,6 +1,6 @@
 package org.lolongo;
 
-import java.util.Collection;
+import java.util.Set;
 
 class ComponentFunction implements Function, DataBindingProvider {
 
@@ -26,12 +26,12 @@ class ComponentFunction implements Function, DataBindingProvider {
 	}
 
 	@Override
-	public Collection<? extends Ref<?>> getInputBindings(Context context) throws DataBindingException {
+	public Set<? extends Ref<?>> getInputBindings(Context context) throws DataBindingException {
 		return DataBindingUtils.getInputBindings(context, componentFunction);
 	}
 
 	@Override
-	public Collection<? extends Ref<?>> getOutputBindings(Context context) throws DataBindingException {
+	public Set<? extends Ref<?>> getOutputBindings(Context context) throws DataBindingException {
 		return DataBindingUtils.getOutputBindings(context, componentFunction);
 	}
 

@@ -1,9 +1,9 @@
 package org.lolongo;
 
-import java.util.Collection;
+import java.util.Set;
 
 public interface InputDataBindingProvider {
 
-    Collection< ? extends Ref< ? >> getInputBindings(final Context context) throws DataBindingException;
+	Set<? extends Ref<?>> getInputBindings(final Context context) throws DataBindingException;
 
 }
