@@ -47,9 +47,9 @@ public class Composite2SimpleParallel {
 
 	@DataPoints
 	public static final Function composite[] = { //
-			new CompositeStatic(in, out, FUNCTION_TYPE1, FUNCTION_TYPE2), //
-			new CompositePrepare(in, out, FUNCTION_TYPE1, FUNCTION_TYPE2), //
-			new CompositeResolve(in, out, FUNCTION_TYPE1, FUNCTION_TYPE2) //
+			new CompositeStatic(FUNCTION_TYPE1, FUNCTION_TYPE2), //
+			new CompositePrepare(FUNCTION_TYPE1, FUNCTION_TYPE2), //
+			new CompositeResolve(FUNCTION_TYPE1, FUNCTION_TYPE2) //
 	};
 
 	/**

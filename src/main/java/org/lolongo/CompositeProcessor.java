@@ -35,21 +35,21 @@ public class CompositeProcessor extends ProcessorBase implements ProblemBuilder 
 		this.functionSequencer = functionSequencer;
 	}
 
-	public void prepare(CompositeFunctionContainer container, Context context) throws FunctionException {
+	protected void prepare(CompositeFunctionContainer container, Context context) throws FunctionException {
 		logger.debug("preparing functions for {} in {}", container, context);
 		for (final Function function : functions) {
 			try {
 				// TODO rework to avoid 'instanceof' and the inner 'for'
-				if (function instanceof CompositeFunction) {
-					final CompositeFunction compositeFunction = ((CompositeFunction) function);
+				if (function instanceof CompositeFunctionDyn) {
+					final CompositeFunctionDyn compositeFunction = ((CompositeFunctionDyn) function);
 					final InternalContext internalContext = new InternalContext(context);
 					container.add(compositeFunction, internalContext);
 
 					logger.debug("- preparing Composite function {}", function);
 					final FunctionContainer functionContainer = new FunctionContainer();
 					compositeFunction.prepare(functionContainer, internalContext);
-					for (Function compositeFunctionDyn : functionContainer) {
-						container.add(new ComponentFunction(compositeFunction, compositeFunctionDyn), internalContext);
+					for (Function CompositeFunction : functionContainer) {
+						container.add(new ComponentFunction(compositeFunction, CompositeFunction), internalContext);
 					}
 					container.add(function, internalContext);
 				} else {
@@ -61,15 +61,15 @@ public class CompositeProcessor extends ProcessorBase implements ProblemBuilder 
 		}
 	}
 
-	public void resolve(final Collection<Entry<Function, Context>> entries) throws FunctionException {
+	protected void resolve(final Collection<Entry<Function, Context>> entries) throws FunctionException {
 		logger.debug("resolving {}", entries);
 		for (final Entry<Function, Context> entry : entries) {
 			final Function function = entry.getKey();
 			try {
 				final Context internalContext = entry.getValue();
 				// TODO rework to avoid 'instanceof'
-				if (function instanceof CompositeFunction) {
-					final CompositeFunction compositeFunction = ((CompositeFunction) function);
+				if (function instanceof CompositeFunctionDyn) {
+					final CompositeFunctionDyn compositeFunction = ((CompositeFunctionDyn) function);
 					logger.debug("- resolving Composite function {} on {}", compositeFunction, internalContext);
 					compositeFunction.resolve(internalContext);
 				} else {

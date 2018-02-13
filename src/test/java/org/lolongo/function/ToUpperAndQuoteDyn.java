@@ -1,15 +1,14 @@
 package org.lolongo.function;
 
-import org.lolongo.CompositeFunction;
+import org.lolongo.CompositeFunctionDyn;
 import org.lolongo.Context;
-import org.lolongo.ContextException;
 import org.lolongo.FunctionContainer;
 import org.lolongo.InputBinding;
 import org.lolongo.InternalRef;
 import org.lolongo.OutputBinding;
 import org.lolongo.Ref;
 
-public class ToUpperAndQuote3 extends CompositeFunction {
+public class ToUpperAndQuoteDyn extends CompositeFunctionDyn {
 
 	@InputBinding
 	private final Ref<String> refIn;
@@ -17,22 +16,17 @@ public class ToUpperAndQuote3 extends CompositeFunction {
 	@OutputBinding
 	private final Ref<String> refOut;
 
-	private static final InternalRef<String> refTmp = new InternalRef<String>("tmp");
+	private static final InternalRef<String> tmp = new InternalRef<String>("tmp");
 
-	public ToUpperAndQuote3(Ref<String> in, Ref<String> out) {
+	public ToUpperAndQuoteDyn(Ref<String> in, Ref<String> out) {
 		refIn = in;
 		refOut = out;
 	}
 
 	@Override
 	public void prepare(FunctionContainer container, Context context) {
-		container.add(new ToUpperCase(refIn, refTmp));
-	};
-
-	@Override
-	public void resolve(Context context) throws ContextException {
-		final String tmp = String.format("'%s'", context.get(refTmp));
-		context.put(refOut, tmp);
+		container.add(new ToUpperCase(refIn, tmp));
+		container.add(new Quote(tmp, refOut));
 	}
 
 	@Override

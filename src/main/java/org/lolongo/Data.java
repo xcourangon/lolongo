@@ -1,6 +1,5 @@
 package org.lolongo;
 
-
 /**
  * A Data is the aggregation of a value with its ref.
  * 
@@ -8,23 +7,23 @@ package org.lolongo;
  */
 public class Data<T> {
 
-    private final T      value;
-    private Ref<? extends Data<T>> ref;
+	private final T value;
+	private Ref<? extends T> ref;
 
-    public Data(T value) {
-        this.value = value;
-    }
+	public Data(T value) {
+		this.value = value;
+	}
 
-    public Data(Ref<? extends Data<T>> ref, T value) {
-        this.ref = ref;
-        this.value = value;
-    }
+	public Data(Ref<? extends T> ref, T value) {
+		this.ref = ref;
+		this.value = value;
+	}
 
-    public Ref<? extends Data<T>> getRef() {
-        return ref;
-    }
+	public Ref<? extends T> getRef() {
+		return ref;
+	}
 
-    public T getValue() {
-        return value;
-    }
+	public T getValue() {
+		return value;
+	}
 }

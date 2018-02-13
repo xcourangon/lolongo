@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.lolongo.function.Quote;
 import org.lolongo.function.ToUpperAndQuote;
-import org.lolongo.function.ToUpperAndQuote2;
-import org.lolongo.function.ToUpperAndQuote3;
+import org.lolongo.function.ToUpperAndQuoteDyn;
+import org.lolongo.function.ToUpperAndQuoteDynResolve;
 import org.lolongo.matcher.RefExceptionMatcher;
 
 /**
@@ -45,7 +45,7 @@ public class CompositeFunctionTest {
 	@Test
 	public void testToUpperAndQuote2() throws Exception {
 		context.put(new RefId<String>("in"), "value");
-		processor.add(new ToUpperAndQuote2(new RefId<String>("in"), new RefId<String>("out")));
+		processor.add(new ToUpperAndQuoteDyn(new RefId<String>("in"), new RefId<String>("out")));
 		processor.execute(context);
 		Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
 		thrown.expect(RefNotFound.class);
@@ -56,7 +56,7 @@ public class CompositeFunctionTest {
 	@Test
 	public void testToUpperAndQuote3() throws Exception {
 		context.put(new RefId<String>("in"), "value");
-		processor.add(new ToUpperAndQuote3(new RefId<String>("in"), new RefId<String>("out")));
+		processor.add(new ToUpperAndQuoteDynResolve(new RefId<String>("in"), new RefId<String>("out")));
 		processor.execute(context);
 		Assert.assertEquals("'VALUE'", context.get(new RefId<String>("out")));
 		thrown.expect(RefNotFound.class);
@@ -72,7 +72,7 @@ public class CompositeFunctionTest {
 	public void testMixedCompositeFunction() throws Exception {
 		context.put(new RefId<String>("in"), "value");
 		processor.add(new Quote(new RefId<String>("in"), new RefId<String>("tmp")));
-		processor.add(new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out")));
+		processor.add(new ToUpperAndQuoteDyn(new RefId<String>("tmp"), new RefId<String>("out")));
 		processor.add(new Quote(new RefId<String>("out"), new RefId<String>("out2")));
 		processor.execute(context);
 		Assert.assertEquals("value", context.get(new RefId<String>("in")));

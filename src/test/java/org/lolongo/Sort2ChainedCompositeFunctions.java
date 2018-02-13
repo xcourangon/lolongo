@@ -46,7 +46,7 @@ public class Sort2ChainedCompositeFunctions {
 	@Test
 	public void testSortStatic() throws Exception {
 
-		final Function functions[] = { new CompositeStatic(in, out, FUNCTION_TYPE1), new CompositeStatic(in, out, FUNCTION_TYPE2) };
+		final Function functions[] = { new CompositeStatic(FUNCTION_TYPE1), new CompositeStatic(FUNCTION_TYPE2) };
 
 		processor.add(functions[1]);
 		processor.add(functions[0]);
@@ -59,7 +59,7 @@ public class Sort2ChainedCompositeFunctions {
 		final Collection<Entry<Function, Context>>[] steps = sorter.sort(container);
 
 		final Collection<Function>[] stepsWithoutContext = Composite1Simple.getStepsWithoutContext(steps);
-		//		Assert.assertEquals(5, stepsWithoutContext.length);
+		Assert.assertEquals(5, stepsWithoutContext.length);
 		Collection<Function> step1 = stepsWithoutContext[0];
 		Assert.assertEquals(1, step1.size());
 		Assert.assertTrue(step1.contains(FUNCTION_TYPE1));
@@ -78,20 +78,17 @@ public class Sort2ChainedCompositeFunctions {
 	@Test
 	public void testSortDynamic() throws Exception {
 
-		final Function functions[] = { new CompositePrepare(in, out, FUNCTION_TYPE1), new CompositePrepare(in, out, FUNCTION_TYPE2) };
-
-		processor.add(functions[1]);
-		processor.add(functions[0]);
+		final Function functions[] = { new CompositePrepare(FUNCTION_TYPE1), new CompositePrepare(FUNCTION_TYPE2) };
 
 		// prepare functions
 		CompositeFunctionContainer container = new CompositeFunctionContainer(context);
-		processor.prepare(container, context);
+		container.add(functions[1]);
+		container.add(functions[0]);
 
-		Collections.shuffle(container);
 		final Collection<Entry<Function, Context>>[] steps = sorter.sort(container);
 
 		final Collection<Function>[] stepsWithoutContext = Composite1Simple.getStepsWithoutContext(steps);
-		//		Assert.assertEquals(5, stepsWithoutContext.length);
+		//Assert.assertEquals(6, stepsWithoutContext.length);
 		Collection<Function> step1 = stepsWithoutContext[0];
 		Assert.assertEquals(1, step1.size());
 		Assert.assertTrue(step1.contains(FUNCTION_TYPE1)); // a
@@ -106,7 +103,7 @@ public class Sort2ChainedCompositeFunctions {
 
 	@Test
 	public void testSortResolve() throws Exception {
-		final Function functions[] = { new CompositeResolve(in, out, FUNCTION_TYPE1), new CompositeResolve(in, out, FUNCTION_TYPE2) };
+		final Function functions[] = { new CompositeResolve(FUNCTION_TYPE1), new CompositeResolve(FUNCTION_TYPE2) };
 		processor.add(functions[1]);
 		processor.add(functions[0]);
 

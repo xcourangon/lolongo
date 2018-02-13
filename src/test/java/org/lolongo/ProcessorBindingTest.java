@@ -7,7 +7,7 @@ import org.lolongo.function.Addition;
 import org.lolongo.function.Identity;
 import org.lolongo.function.Multiplication;
 import org.lolongo.function.Quote;
-import org.lolongo.function.ToUpperAndQuote2;
+import org.lolongo.function.ToUpperAndQuoteDyn;
 import org.lolongo.function.ToUpperCase;
 
 public class ProcessorBindingTest {
@@ -66,7 +66,7 @@ public class ProcessorBindingTest {
 	@Test
 	public void testCompositeFunctionUnordered() throws Exception {
 		context.put(new RefId<String>("in"), "value");
-		processor.add(new ToUpperAndQuote2(new RefId<String>("tmp"), new RefId<String>("out")));
+		processor.add(new ToUpperAndQuoteDyn(new RefId<String>("tmp"), new RefId<String>("out")));
 		processor.add(new Identity(new RefId<String>("in"), new RefId<String>("tmp")));
 		processor.add(new Identity(new RefId<String>("out"), new RefId<String>("out2")));
 		processor.execute(context);
